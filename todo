@@ -1,0 +1,15 @@
+- talvez fazer o home (swipes) primeiro 
+
+- para fazer a tela de profile preciso fazer o componente navbar
+
+- profile tela de perfil
+
+- talvez tb criar logo a tela de login e ter apenas o botao de skip que jogara para a home
+
+- validar so acessar tela de upload caso esteja logado, estudar essa validacao
+
+obs: a tela de criacao na vdd eh a de editar, ao salvar leva para tela de visualizar o post 
+
+sugestao de nomes: Erovibe, Erogrid, Erozone, Erohub, Eroscope, Eroland
+
+INVESTIGAR ESSE ERRO QUE SO ACONTECE COM ALGUMAS MIDIAS: POST http://localhost:8000/api/media 422 (Unprocessable Content)
