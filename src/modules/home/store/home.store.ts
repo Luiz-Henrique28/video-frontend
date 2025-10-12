@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getPosts } from '../services/home.api'
+import { getPosts, getNextpage } from '../services/home.api'
 import type { CardPostModel } from '../services/home.api'
 
 type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error';
@@ -7,34 +7,44 @@ type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error'
 export const useCreateHomeStore = defineStore('createHome', {
 
     state: () => ({
-        posts: [] as unknown as CardPostModel,
-        status: 'initial' as Status
+        posts: [] as CardPostModel[],
+        status: 'initial' as Status,
+        nextPage: '' as string | null
     }),
     actions: {
-        async listPosts(){
-            
+        async listPosts() {
+
             try {
                 this.status = 'loading'
+                const result = await getPosts()
 
-                const posts = await getPosts()
-                this.posts = posts.data
-
-                console.log(this.posts)
+                this.posts = result.data
+                this.nextPage = result.next_page_url
 
                 this.status = 'success'
             } catch (error) {
                 this.status = 'error'
             }
-            
-            
-            
-            
 
+        },
+
+        async getnextpage() {
+            try {
+                
+                if(!this.nextPage) return 
+                const posts = await getNextpage(this.nextPage)
+
+                this.posts.push(...posts.data)
+                this.nextPage = posts.next_page_url
+                
+            } catch (error) {
+                this.status = 'error'
+            }
         }
     },
     getters: {
-        
-    },    
+
+    },
 
 
 })

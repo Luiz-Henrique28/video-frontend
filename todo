@@ -1,4 +1,9 @@
-- talvez fazer o home (swipes) primeiro 
+- talvez fazer o home (swipes) primeiro, juntamente com a paginacao 
+{
+    ajustar paginacao infinita para comecar a carregar quando minimamente ver a div sentinel
+} (feito)
+
+- a tela de visualizar um post, que tem um comportamente diferente: ao clicar em um post voce tem a possibilidade de mais infos sobre aquele post (todas suas medias, comentarios, e muitas outras infos) num formato estilo feed do instagram, cada media no tamanho maior para ser bem vista e rolando para baixo para continuar vendo as medias daquele post e fazer continar infinitamente o scroll para continuar descendo e vendo as medias dos outros posts.
 
 - para fazer a tela de profile preciso fazer o componente navbar
 
