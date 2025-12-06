@@ -6,6 +6,7 @@ type CardPostModel = {
     user_id: number,
     caption: string,
     // Deve ser 'first_media'
+    thumbnail_path: string,
     first_media: any, 
     user: {
         id: any,

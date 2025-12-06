@@ -4,9 +4,12 @@ import HomePage from './modules/home/views/HomePage.vue';
 </script>
 
 
+
 <template>
-  <!-- <CreatePostPage/> -->
-  <HomePage/>
+  <div id="app-layout">
+    <router-view></router-view>
+
+    </div>
 </template>
 
 

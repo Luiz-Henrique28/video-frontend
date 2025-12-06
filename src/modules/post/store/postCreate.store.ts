@@ -56,15 +56,17 @@ export const usePostCreateStore = defineStore('postCreate', {
 
                 //this.abortCtrl = new AbortController()
 
-                if (result.data.user_id && result.data.id) {
+                if (result?.data.user_id && result?.data.id) {
 
                     //this.abortCtrl = new AbortController()
 
                     try {
+                        console.log("files que vao ser uplodadas" ,this.files)
+
                         await uploadMedia(
                             this.files,
-                            result.data.id,
-                            result.data.user_id,
+                            result?.data.id,
+                            result?.data.user_id,
 
                             (pct) => (this.progress = pct),
                             //this.abortCtrl.signal

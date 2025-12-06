@@ -2,10 +2,11 @@
   <div :id="id">
     <!-- Thumbnail quadrada -->
     <div class="post-thumbnail-container position-relative w-100">
-      <a :href="'/posts/' + id" class="d-block">
+      <!-- <a :href="'/posts/' + id" class="d-block"> -->
+        <a href="/createPost" class="d-block">
 
         <div class="thumbnail-wrapper position-relative">
-          <img :src="first_media?.file_path" :alt="caption" class="w-100 h-100 object-cover rounded" loading="lazy" />
+          <img :src="thumbnail_path" :alt="caption" class="w-100 h-100 object-cover rounded" loading="lazy" />
 
           <div class="post-counts position-absolute bottom-0 end-0 p-2 d-flex align-items-center">
 
@@ -48,7 +49,7 @@ const props = defineProps({
   id: { type: String, required: true },
   userId: { type: Number, required: true },
   caption: { type: String, default: '' },
-  first_media: { type: Object, default: null },
+  thumbnail_path: { type: String, default: null },
   user: { type: Object, required: true },
   imageCount: { type: Number, default: 0 },
   videoCount: { type: Number, default: 0 }

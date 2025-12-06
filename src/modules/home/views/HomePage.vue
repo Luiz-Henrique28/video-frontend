@@ -16,6 +16,7 @@
                         <PostCard class="list-unstyled" 
                             :id="post.id.toString()" 
                             :userId="post.user_id"
+                            :thumbnail_path="post.thumbnail_path"
                             :caption="post.caption" 
                             :imageCount="post.image_count" 
                             :videoCount="post.video_count"
