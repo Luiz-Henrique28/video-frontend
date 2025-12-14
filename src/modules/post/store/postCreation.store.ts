@@ -4,7 +4,7 @@ import axios, { CanceledError } from 'axios'
 
 type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error';
 
-export const usePostCreateStore = defineStore('postCreate', {
+export const usePostCreationStore = defineStore('postCreation', {
 
     state: () => ({
         title: '' as string,

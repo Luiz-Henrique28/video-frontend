@@ -4,7 +4,7 @@ import type { CardPostModel } from '../services/home.api'
 
 type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error';
 
-export const useCreateHomeStore = defineStore('createHome', {
+export const useHomeStore = defineStore('home', {
 
     state: () => ({
         posts: [] as CardPostModel[],

@@ -122,9 +122,9 @@
 <script setup lang="ts">
 
 import { storeToRefs } from 'pinia'
-import { usePostCreateStore } from '../store/postCreate.store'
+import { usePostCreationStore } from '../store/postCreation.store'
 
-const postStore = usePostCreateStore()
+const postStore = usePostCreationStore()
 const { title, files, status, tag, tags, progress, visibility, hasFiles, getCountOfImages, getCountOfVideos, hasTags, error } = storeToRefs(postStore)
 
 function selectFile(e: Event) {

@@ -2,8 +2,7 @@
   <div :id="id">
     <!-- Thumbnail quadrada -->
     <div class="post-thumbnail-container position-relative w-100">
-      <!-- <a :href="'/posts/' + id" class="d-block"> -->
-        <a href="/createPost" class="d-block">
+        <a :href="'/post/' + id" class="d-block">
 
         <div class="thumbnail-wrapper position-relative">
           <img :src="thumbnail_path" :alt="caption" class="w-100 h-100 object-cover rounded" loading="lazy" />
@@ -33,7 +32,7 @@
       <img :src="user.avatar" :alt="user.name + ' avatar'" class="rounded-circle me-1 align-center" width="36"
         height="36" />
       <div class="flex-column">
-        <a :href="'/posts/' + id" class="d-block fw-semibold text-truncate w-100" :title="caption">
+        <a :href="'/post/' + id" class="d-block fw-semibold text-truncate w-100" :title="caption">
           {{ caption }}
         </a>
         <span class="text-start d-block text-truncate">{{ user.name }}</span>

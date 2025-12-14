@@ -45,11 +45,11 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useCreateHomeStore } from '../store/home.store'
+import { useHomeStore } from '../store/home.store'
 import PostCard from '../components/PostCard.vue'
 import { onMounted, onUnmounted, watch, ref } from 'vue'
 
-const homeStore = useCreateHomeStore()
+const homeStore = useHomeStore()
 const { posts, status, nextPage } = storeToRefs(homeStore)
 
 const sentinelElement = ref<any | null>(null)
