@@ -115,18 +115,30 @@
                     type="text"
                     v-model="inputComment"
                     @focus="isButtonVisible = true"
-                    class="form-control bg-transparent border-secondary text-white"
+                    :disabled="status === 'loading'"
+                    class="form-control bg-transparent border-secondary text-white pe-5"
                     placeholder="Add a comment"
-                    style="padding-right: 45px;"
                     @keyup.enter="addComment">
 
                 <button
+                    v-show="isButtonVisible"
                     class="send-btn position-absolute"
+                    :class="{ 'loading': status === 'loading' }"
                     type="button"
                     @click="addComment"
-                    v-show="isButtonVisible">
+                    :disabled="status === 'loading'">
 
-                    <i class="bi bi-send-fill text-pink"></i>
+                    <!-- spinner -->
+                    <span v-if="status === 'loading'"
+                          class="d-inline-flex align-items-center gap-1">
+                        <div class="spinner-border spinner-border-sm text-pink"
+                             style="width: 0.9rem; height: 0.9rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </span>
+
+                    <!-- icon send -->
+                    <i v-else class="bi bi-send-fill text-pink"></i>
                 </button>
             </div>
 
@@ -199,7 +211,6 @@ onMounted(() => {
 })
 
 const addComment = async () => {
-
     if (!inputComment.value.trim()) return
     if (!post.value) return
 
@@ -213,153 +224,151 @@ const addComment = async () => {
 </script>
 
 <style scoped>
-
 .send-btn {
   right: 5px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  padding: 7px;
+  padding: 10px;
   cursor: pointer;
   z-index: 10;
+  transition: var(--transition-normal);  /* ✅ Usando variável global */
+}
+
+.send-btn.loading {
+  opacity: var(--opacity-loading);  /* ✅ Usando variável global */
+  cursor: not-allowed;
+}
+
+.send-btn:not(:disabled):hover {
+  transform: translateY(-50%) scale(1.1);
 }
 
 .send-btn:focus {
   outline: none;
 }
 
-/* CORES E VARIÁVEIS BASEADAS NO PRINT */
-:root {
+input:disabled {
+  opacity: var(--opacity-disabled);  /* ✅ Usando variável global */
+}
+
+/* ❌ REMOVER ESSAS LINHAS (agora estão no global.css) */
+/* :root {
     --theme-bg: #1a1a1a;
     --theme-pink: #ff4d79;
-    /* A cor rosa do print */
     --theme-pink-hover: #e03565;
     --text-muted: #a0a0a0;
-}
+} */
 
 .main-content {
-    background-color: #181818;
-    /* Fundo bem escuro */
-    min-height: 100vh;
-    color: #e0e0e0;
+  background-color: var(--bg-input);  /* ✅ Usando variável global */
+  min-height: 100vh;
+  color: var(--text-primary);  /* ✅ Usando variável global */
 }
 
-/* Tipografia */
 .username {
-    color: #ff4d79;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1.1rem;
-    max-width: 150px;
-    /* Necessário para text-truncate funcionar */
+  color: var(--primary-color);  /* ✅ Roxo agora */
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  max-width: 150px;
 }
 
 .username:hover {
-    color: #ff7aa0;
+  color: var(--primary-light);  /* ✅ Usando variável global */
 }
 
 .text-pink {
-    color: #ff4d79;
+  color: var(--primary-color);  /* ✅ Agora é roxo */
 }
 
-/* Avatar */
 .avatar-circle {
-    width: 35px;
-    height: 35px;
-    background-color: #333;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-weight: bold;
+  width: 35px;
+  height: 35px;
+  background-color: var(--bg-card);  /* ✅ Usando variável global */
+  border-radius: var(--radius-full);  /* ✅ Usando variável global */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);  /* ✅ Usando variável global */
+  font-weight: bold;
 }
 
-/* Botões Customizados */
 .btn-pink {
-    background-color: #ff4d79;
-    border: none;
-    border-radius: 2px;
-    /* Bordas levemente quadradas como no print */
-    font-size: 0.75rem;
-    padding: 0.25rem 0.6rem;
+  background-color: var(--primary-color);  /* ✅ Roxo */
+  border: none;
+  border-radius: var(--radius-sm);  /* ✅ Usando variável global */
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  transition: var(--transition-normal);  /* ✅ Usando variável global */
 }
 
 .btn-pink:hover {
-    background-color: #e03565;
+  background-color: var(--primary-hover);  /* ✅ Usando variável global */
 }
 
-.btn-pink-outline {
-    background-color: #ff4d79;
-    color: #fff;
-    border: none;
-    border-radius: 2px;
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
-}
-
-/* Stats Icons */
 .post-stats i {
-    font-size: 1rem;
-    color: #888;
+  font-size: 1rem;
+  color: var(--text-muted);  /* ✅ Usando variável global */
 }
 
 .action-icons i {
-    padding: 5px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    cursor: pointer;
+  padding: 5px;
+  border: 1px solid var(--border-color);  /* ✅ Usando variável global */
+  border-radius: var(--radius-sm);  /* ✅ Usando variável global */
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-fast);  /* ✅ Usando variável global */
 }
 
-/* Input de Comentário */
+.action-icons i:hover {
+  border-color: var(--primary-color);  /* ✅ Usando variável global */
+  color: var(--primary-color);  /* ✅ Usando variável global */
+}
+
 .comment-input-wrapper input {
-    border: 1px dashed #444;
-    /* Estilo dashed similar ao seu exemplo anterior */
-    border-radius: 4px;
-    font-size: 0.9rem;
+  border: 1px dashed var(--border-color);  /* ✅ Usando variável global */
+  border-radius: var(--radius-sm);  /* ✅ Usando variável global */
+  font-size: 0.9rem;
 }
 
 .comment-input-wrapper input::placeholder {
-    color: #666;
-    /* Cor do placeholder */
-    opacity: 1;
+  color: var(--text-muted);  /* ✅ Usando variável global */
+  opacity: 1;
 }
 
 .comment-input-wrapper input:focus {
-    background-color: #222 !important;
-    border-color: #ff4d79;
-    box-shadow: none;
-    color: #fff;
+  background-color: var(--bg-card) !important;  /* ✅ Usando variável global */
+  border-color: var(--primary-color);  /* ✅ Usando variável global */
+  box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.15);
+  color: var(--text-white);  /* ✅ Usando variável global */
 }
 
-/* Overlay do Grid de posts */
 .bg-gradient-overlay {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 }
 
-/* Media Player - Full Width */
 .full-width-media {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    padding: 0;
-    margin-bottom: 1.5rem;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding: 0;
+  margin-bottom: 1.5rem;
 }
 
 .media-item {
-    width: 100%;
-    margin-bottom: 1rem;
-    background: #000;
+  width: 100%;
+  margin-bottom: 1rem;
+  background: #000;
 }
 
 .media-item:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .media-item video {
-    display: block;
-    max-height: 80vh;
-    background: #000;
+  display: block;
+  max-height: 80vh;
+  background: #000;
 }
 </style>

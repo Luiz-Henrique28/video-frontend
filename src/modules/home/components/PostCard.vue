@@ -28,21 +28,20 @@
     </div>
 
     <!-- Informações do usuário -->
-    <div class="d-flex align-items-center mt-2 col-12">
-      <img :src="user.avatar" :alt="user.name + ' avatar'" class="rounded-circle me-1 align-center" width="36"
-        height="36" />
+    <div class="d-flex align-items-start mt-2 col-12">
+      <img :src="user.avatar" :alt="user.name + ' avatar'" class="user-avatar rounded-circle me-2 flex-shrink-0" />
       <div class="flex-column">
-        <a :href="'/post/' + id" class="d-block fw-semibold text-truncate w-100" :title="caption">
+        <a :href="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
           {{ caption }}
         </a>
-        <span class="text-start d-block text-truncate">{{ user.name }}</span>
+        <span class="text-start d-block text-truncate post-username post-username-size">{{ user.name }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import {  } from 'vue';
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -74,10 +73,33 @@ const props = defineProps({
 }
 
 
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  object-fit: cover;
+}
+
 .flex-column {
   min-width: 0;
 }
 
+.post-caption-lines {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+  text-overflow: clip;
+  max-height: 2.8em;
+  line-height: 1.4em;
+}
+
+.post-username-size {
+  font-size: 0.85rem;
+}
 
 .post-user {
   font-size: 0.75rem;

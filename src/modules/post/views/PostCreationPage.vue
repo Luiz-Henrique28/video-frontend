@@ -66,7 +66,9 @@
 
                         <video v-if="file.type.startsWith('video/')" controls="true" :src="postStore.getPreviewUrl(file)" class="w-100"></video>
 
-                        <button @click="postStore.removeFile(file)" class="position-absolute end-0 my-2 mx-2">x</button>
+                        <button @click="postStore.removeFile(file)" class="btn-remove-media position-absolute top-0 end-0 m-2">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </li>
                 </ul>
 
@@ -111,7 +113,9 @@
                 </div>
             </div>
 
-            <button id="saveBtn" @click="postStore.sendFiles()"><i class="bi bi-check-lg"></i> SAVE </button>
+            <div class="text-center mt-4">
+                <button id="saveBtn" @click="postStore.sendFiles()"><i class="bi bi-check-lg"></i> SAVE </button>
+            </div>
 
         </div>
 
@@ -147,12 +151,21 @@ function selectFile(e: Event) {
 }
 
 .basic-input {
-    border: 2px dashed #999999;
+    border: 2px dashed var(--border-color);
     padding: 6px;
+    background-color: transparent;
+    color: var(--text-primary);
 }
 
 .basic-input::placeholder {
     font-size: large;
+    color: var(--text-muted);
+}
+
+.basic-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: var(--bg-card);
 }
 
 /* Esconde o input de arquivo padrão */
@@ -163,20 +176,15 @@ function selectFile(e: Event) {
 /* Estiliza a área clicável */
 .file-upload-area {
     width: 100%;
-    /* max-width: 400px; */
     padding: 3rem;
-    border: 2px dashed #999999;
-    /* border-radius: 8px; */
+    border: 2px dashed var(--border-color);
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-normal);
 }
 
 .file-upload-area:hover {
-    border-color: #007bff;
-    /* Mude a cor da borda ao passar o mouse */
-    /* background-color: #f8f9fa; */
-    /* Adicione um fundo leve */
+    border-color: var(--primary-color);
 }
 
 .file-upload-area i {
@@ -184,42 +192,87 @@ function selectFile(e: Event) {
 }
 
 .file-upload-area p {
-    color: #999999;
+    color: var(--text-muted);
     font-weight: 500;
     font-size: larger;
 }
 
 /* Estilo padrão: botão sem fundo, com borda e texto coloridos */
 .btn-outline-custom {
-    color: rgb(162, 0, 221);
-    /* Cor do texto */
-    background-color: rgba(0);
-    /* Fundo transparente */
-    border: 2px solid rgb(162, 0, 221);
-    /* Borda com a mesma cor */
+    color: var(--primary-color);
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    transition: var(--transition-normal);
 }
 
-/* Estilo para quando o mouse passar por cima */
 .btn-outline-custom:hover {
-    color: #fff;
-    /* Cor do texto muda para branco */
-    background-color: rgb(162, 0, 221);
-    /* Fundo ganha cor */
-    border-color: rgb(162, 0, 221);
-    /* Borda mantém a cor */
+    color: var(--text-white);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 #saveBtn {
-    color: #232323;
-    background-color: rgb(162, 0, 221);
+    color: var(--text-white);
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+#saveBtn:hover {
+    background-color: var(--primary-hover);
 }
 
 .dropdown-menu {
-    background-color: #232323;
-    border: 2px solid #999999;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
 }
 
 .dropdown-menu li {
-    color: #999999;
+    color: var(--text-muted);
+}
+
+/* Input de tags */
+#input-tag {
+    background-color: transparent;
+    color: var(--text-primary);
+}
+
+#input-tag::placeholder {
+    color: var(--text-muted);
+}
+
+#input-tag:focus {
+    background-color: var(--bg-card);
+    outline: none;
+}
+
+/* Botão de remover mídia */
+.btn-remove-media {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: var(--radius-sm);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    padding: 0;
+    color: #333;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-remove-media:hover {
+    background-color: var(--error);
+    color: var(--text-white);
+    transform: scale(1.1);
+}
+
+.btn-remove-media:active {
+    transform: scale(0.95);
 }
 </style>
