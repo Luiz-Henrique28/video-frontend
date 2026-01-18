@@ -39,7 +39,7 @@ export const usePostCreationStore = defineStore('postCreation', {
         async sendFiles() {
 
             const fakeJson = {
-                userId: 66, // TODO - isso aqui tem que vim do usuario logado
+                userId: 86, // TODO - isso aqui tem que vim do usuario logado
                 caption: this.title,
                 visibility: this.visibility,
                 tags: this.tags

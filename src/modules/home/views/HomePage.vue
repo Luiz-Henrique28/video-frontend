@@ -2,6 +2,8 @@
 
     <div>
         HOME <!-- icone de home -->
+
+        <button @click="authStore.logout" >teste</button>
     </div>
 
     <div id="swipes" class="">
@@ -47,8 +49,10 @@
 import { storeToRefs } from 'pinia'
 import { useHomeStore } from '../store/home.store'
 import PostCard from '../components/PostCard.vue'
-import { onMounted, onUnmounted, watch, ref } from 'vue'
+import { onUnmounted, watch, ref } from 'vue'
+import { useAuthStore } from '../../auth/store/auth.store'
 
+const authStore = useAuthStore()
 const homeStore = useHomeStore()
 const { posts, status, nextPage } = storeToRefs(homeStore)
 
@@ -56,9 +60,7 @@ const sentinelElement = ref<any | null>(null)
 
 let observer: IntersectionObserver | null = null;
 
-onMounted(() => {
-    homeStore.listPosts()
-})
+homeStore.listPosts()
 
 watch(sentinelElement, (target) => {
 
@@ -72,10 +74,8 @@ watch(sentinelElement, (target) => {
 
         if (entry.isIntersecting) {
 
-
             // console.log("tocou") esse log da pra ver bem o comportamento do carregamente atencipado da chegada ao fim da tela
             homeStore.getnextpage()
-
             // Para paginação infinita, geralmente você desconecta o observer 
             // logo após disparar o carregamento para evitar chamadas múltiplas.
             //observer.unobserve(target); 
