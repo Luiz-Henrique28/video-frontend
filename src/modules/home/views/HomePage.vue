@@ -1,12 +1,32 @@
 <template>
 
-    <div>
-        HOME <!-- icone de home -->
+    <NavBar/>
 
+    <!-- only when necessary
+    <div>
         <button @click="authStore.logout" >teste</button>
-    </div>
+    </div> -->
 
     <div id="swipes" class="">
+
+        <div class="p-2">
+            <i class="bi bi-house-door-fill fs-3"></i> <span class="fs-3">Explore</span>
+        </div>
+        
+        <div id="tabs" class="p-2 d-flex gap-4 fs-5">
+            <div
+                :class="{ 'tab-active': activeTab === 'home' }"
+                @click="activeTab = 'home'"
+                style="cursor: pointer;">
+                HOME
+            </div>
+            <div
+                :class="{ 'tab-active': activeTab === 'new' }"
+                @click="activeTab = 'new'"
+                style="cursor: pointer;">
+                NEW
+            </div>
+        </div>
 
         <div v-if="status == 'success'">
 
@@ -51,12 +71,14 @@ import { useHomeStore } from '../store/home.store'
 import PostCard from '../components/PostCard.vue'
 import { onUnmounted, watch, ref } from 'vue'
 import { useAuthStore } from '../../auth/store/auth.store'
+import NavBar from '../../../core/components/NavBar.vue'
 
 const authStore = useAuthStore()
 const homeStore = useHomeStore()
 const { posts, status, nextPage } = storeToRefs(homeStore)
 
 const sentinelElement = ref<any | null>(null)
+const activeTab = ref('home')
 
 let observer: IntersectionObserver | null = null;
 
@@ -103,4 +125,8 @@ onUnmounted(() => {
 </script>
 
 
-<style></style>
+<style scoped>
+.tab-active {
+    color: var(--primary-color, #ff69b4);
+}
+</style>
