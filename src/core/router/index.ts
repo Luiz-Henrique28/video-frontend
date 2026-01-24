@@ -3,6 +3,8 @@ import PostCreationPage from '../../modules/post/views/PostCreationPage.vue'
 import HomePage from '../../modules/home/views/HomePage.vue'
 import PostDetailPage from '../../modules/post/views/PostDetailPage.vue'
 import WelcomePage from '../../modules/auth/views/WelcomePage.vue'
+import ProfilePage from '../../modules/profile/views/ProfilePage.vue'
+import SettingsPage from '../../modules/profile/views/SettingsPage.vue'
 import { useAuthStore } from '../../modules/auth/store/auth.store'
 
 const routes = [
@@ -10,6 +12,8 @@ const routes = [
     { path: '/home', name: 'home', component: HomePage },
     { path: '/post/create', name: 'postCreation', component: PostCreationPage },
     { path: '/post/:id', name: 'postDetail', component: PostDetailPage },
+    { path: '/profile', name: 'profile', component: ProfilePage },
+    { path: '/settings', name: 'settings', component: SettingsPage },
 ]
 
 const router = createRouter({
