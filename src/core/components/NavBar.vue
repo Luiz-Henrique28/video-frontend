@@ -36,6 +36,13 @@ const performSearch = useDebounceFn(async (query: string) => {
     try {
         const response = await http.get(`/search?q=${query}`);
         searchResult.value = response.data;
+        searchResult.value.unshift({
+            id: 0,
+            label: query,
+            type: "search",
+            image: null
+        })
+
     } catch (error) {
         console.error("Erro na busca", error);
         searchResult.value = [];
