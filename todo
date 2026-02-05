@@ -32,6 +32,11 @@ Analisando seu projeto Vue 3, vejo que você já tem uma base sólida com:
   - Mostra estado de autenticação (avatar/login button)
   - Componente reutilizável em todas as telas
 
+
+  atualmente estou aqui no desenvolvimento: 
+  - lembrar de voltar aqui para ajustar o direcionamento nos links do search,
+  por hora vou ajustar as rotas no backend
+
   3. PROFILE PAGE 👤
 
   Por quê depois de autenticação:
@@ -97,3 +102,6 @@ export { auth, googleProvider };
 
 --------------------------------------------------------------
 tela de view post nao carrega a picture do usuario
+
+
+Ainda sigo com pendencias em proteger o acesso manual a rotas em dados momentos

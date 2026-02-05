@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', {
                 const token = await result.user.getIdToken();
 
                 this.status = 'loading'
-                
+
                 const response = await http.post(`auth/firebase`, {
                     firebase_token: token
                 });
@@ -39,6 +39,8 @@ export const useAuthStore = defineStore('auth', {
                 this.token = response.data.token;
 
                 localStorage.setItem('token', response.data.token);
+
+                if (!response.data.user.name) return router.push('/chooseUsername');
 
                 router.push('/home');
 
@@ -67,7 +69,7 @@ export const useAuthStore = defineStore('auth', {
 
             this.token = token;
 
-            if(window.location.pathname === '/') router.push('/home')
+            if (window.location.pathname === '/') router.push('/home')
         },
 
         async logout() {
@@ -88,6 +90,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     getters: {
-        isAuthenticate: (state) => !!state.user
+
+        // complete = auth + oneboarding
+        // incomplete = auth
+        authLevel: (state) => state.user
+            ? (state.user.name ? 'complete' : 'incomplete')
+            : 'guest',
     }
 })

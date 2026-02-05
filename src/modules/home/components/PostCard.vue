@@ -29,12 +29,12 @@
 
     <!-- Informações do usuário -->
     <div class="d-flex align-items-start mt-2 col-12">
-      <img :src="user.avatar" :alt="user.name + ' avatar'" class="user-avatar rounded-circle me-2 flex-shrink-0" />
+      <img :src="user?.avatar" :alt="user?.name + ' avatar'" class="user-avatar rounded-circle me-2 flex-shrink-0" />
       <div class="flex-column">
         <a :href="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
           {{ caption }}
         </a>
-        <span class="text-start d-block text-truncate post-username post-username-size">{{ user.name }}</span>
+        <span class="text-start d-block text-truncate post-username post-username-size">{{ user?.name }}</span>
       </div>
     </div>
   </div>
