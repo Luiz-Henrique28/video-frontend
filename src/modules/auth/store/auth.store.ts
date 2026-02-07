@@ -93,8 +93,16 @@ export const useAuthStore = defineStore('auth', {
 
         // complete = auth + oneboarding
         // incomplete = auth
-        authLevel: (state) => state.user
-            ? (state.user.name ? 'complete' : 'incomplete')
-            : 'guest',
+        // authLevel: (state) => state.user
+        //     ? (state.user.name ? 'complete' : 'incomplete')
+        //     : 'guest',
+
+
+        isAuthenticated: (state) => !!state.token,
+        hasUsername: (state) => !!state.user?.name,
+
+        isProfileComplete(): boolean {
+            return this.isAuthenticated && this.hasUsername
+        }
     }
 })

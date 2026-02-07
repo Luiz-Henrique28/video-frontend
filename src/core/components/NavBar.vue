@@ -177,7 +177,7 @@ const goToResult = (item: SearchResult) => {
         </div>
 
         <div class="mobile-menu d-md-none collapse" :class="{ show: menuOpen }">
-            <div v-if="authStore.authLevel === 'guest' || authStore.authLevel === 'incomplete'" class="d-flex flex-column gap-3 px-3 py-3">
+            <div v-if="!authStore.isAuthenticated" class="d-flex flex-column gap-3 px-3 py-3">
 
                 <router-link to="#" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-search me-2"></i>SEARCH

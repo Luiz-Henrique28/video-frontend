@@ -13,7 +13,7 @@
                     <span>I</span>
                 </div>
 
-                <a href="#" class="username me-3 text-truncate"> {{ post?.user.name }} </a>
+                <a href="#" class="username me-3 text-truncate"> {{ post?.user?.name }} </a>
 
                 <button class="btn btn-sm btn-pink fw-bold d-flex align-items-center me-2 flex-shrink-0">
                     <i class="bi bi-plus-lg me-1"></i> FOLLOW

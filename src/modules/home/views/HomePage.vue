@@ -121,7 +121,10 @@ onUnmounted(() => {
         observer.disconnect(); // Desconecta TODAS as observações
     }
 });
-
+watch(() => authStore.user, (newName) => {
+    console.log(authStore.user?.name)
+    console.log(newName)
+});
 </script>
 
 

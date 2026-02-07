@@ -40,7 +40,7 @@ const submitUsername = async () => {
         console.log("passou aqui", authStore.user?.name)
         
         showMessage('Username saved successfully!');
-        router.push('/home'), 800;
+        router.replace('/home');
 
     } catch (err: any) {
 
