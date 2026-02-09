@@ -5,7 +5,6 @@ import { useAuthStore } from '../../modules/auth/store/auth.store';
 import { useDebounceFn } from '@vueuse/core';
 import { http } from '../services/http';
 
-// --- Interfaces ---
 interface SearchResult {
     id: number | string;
     label: string;
@@ -13,11 +12,9 @@ interface SearchResult {
     image?: string | null;
 }
 
-// --- Setup ---
 const router = useRouter();
 const authStore = useAuthStore();
 
-// --- Estados ---
 const menuOpen = ref(false);
 const searchFieldIsOpen = ref(false);
 const searchQuery = ref('');
@@ -25,7 +22,6 @@ const searchInputRef = ref<HTMLInputElement | null>(null);
 const isLoading = ref(false);
 const searchResult = ref<SearchResult[]>([]);
 
-// --- Lógica de Busca ---
 const performSearch = useDebounceFn(async (query: string) => {
     if (query.length < 2) {
         searchResult.value = [];
@@ -36,13 +32,6 @@ const performSearch = useDebounceFn(async (query: string) => {
     try {
         const response = await http.get(`/search?q=${query}`);
         searchResult.value = response.data;
-        searchResult.value.unshift({
-            id: 0,
-            label: query,
-            type: "search",
-            image: null
-        })
-
     } catch (error) {
         console.error("Erro na busca", error);
         searchResult.value = [];
@@ -53,7 +42,6 @@ const performSearch = useDebounceFn(async (query: string) => {
 
 watch(searchQuery, (newQuery) => performSearch(newQuery));
 
-// --- Ações ---
 const toggleSearchField = () => {
     searchFieldIsOpen.value = !searchFieldIsOpen.value;
     if (searchFieldIsOpen.value) {
@@ -141,27 +129,32 @@ const goToResult = (item: SearchResult) => {
 
                 <form @submit.prevent="submitFullSearch" class="search-input-wrapper">
                     <i class="bi bi-search search-icon"></i>
-                    <input ref="searchInputRef" v-model="searchQuery" type="search" class="form-control search-input"
-                        placeholder="Search users, tags..." autofocus />
-                    <div v-if="isLoading"
-                        class="spinner-border spinner-border-sm text-secondary position-absolute end-0 top-50 translate-middle me-3"
-                        role="status"></div>
+                    <input 
+                        ref="searchInputRef"
+                        v-model="searchQuery" 
+                        type="search" 
+                        class="form-control search-input" 
+                        placeholder="Search users, tags..." 
+                        autofocus 
+                    />
+                    <div v-if="isLoading" class="spinner-border spinner-border-sm text-secondary position-absolute end-0 top-50 translate-middle me-3" role="status"></div>
                 </form>
 
-                <div v-if="searchResult.length > 0"
-                    class="search-results-box mt-2 bg-dark rounded border border-secondary">
-                    <div v-for="(item, index) in searchResult" :key="index"
+                <div v-if="searchResult.length > 0" class="search-results-box mt-2 bg-dark rounded border border-secondary">
+                    <div 
+                        v-for="(item, index) in searchResult" 
+                        :key="index"
                         class="d-flex align-items-center p-2 border-bottom border-secondary cursor-pointer hover-bg"
-                        @click="goToResult(item)" style="cursor: pointer;">
+                        @click="goToResult(item)"
+                        style="cursor: pointer;"
+                    >
                         <div v-if="item.type === 'user'" class="d-flex align-items-center w-100 text-white">
-                            <img :src="item.image || '/default-user.png'" class="rounded-circle me-3"
-                                style="width: 32px; height: 32px; object-fit: cover;">
+                            <img :src="item.image || '/default-user.png'" class="rounded-circle me-3" style="width: 32px; height: 32px; object-fit: cover;">
                             <span class="fw-bold">{{ item.label }}</span>
                             <span class="badge bg-secondary ms-auto">User</span>
                         </div>
                         <div v-else class="d-flex align-items-center w-100 text-white">
-                            <div class="me-3 d-flex align-items-center justify-content-center bg-secondary rounded-circle"
-                                style="width: 32px; height: 32px;">
+                            <div class="me-3 d-flex align-items-center justify-content-center bg-secondary rounded-circle" style="width: 32px; height: 32px;">
                                 <i class="bi" :class="item.type === 'tag' ? 'bi-hash' : 'bi-search'"></i>
                             </div>
                             <span>{{ item.label }}</span>
@@ -177,149 +170,46 @@ const goToResult = (item: SearchResult) => {
         </div>
 
         <div class="mobile-menu d-md-none collapse" :class="{ show: menuOpen }">
-            <div v-if="!authStore.isAuthenticated" class="d-flex flex-column gap-3 px-3 py-3">
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
+             <div v-if="!authStore.isAuthenticated" class="d-flex flex-column gap-3 px-3 py-3">
+                <router-link to="#" class="nav-link" @click="menuOpen = false; toggleSearchField()">
                     <i class="bi bi-search me-2"></i>SEARCH
                 </router-link>
-
                 <router-link to="/" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-box-arrow-in-right me-2"></i>SIGN IN
                 </router-link>
-
             </div>
-
+            
             <div v-else class="d-flex flex-column gap-3 px-3 py-3">
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
+                 <router-link to="#" class="nav-link" @click="menuOpen = false; toggleSearchField()">
                     <i class="bi bi-search me-2"></i>SEARCH
                 </router-link>
-
                 <router-link to="/home" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-rss me-2"></i>FEED
                 </router-link>
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-heart-fill me-2"></i>LIKED
-                </router-link>
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-bookmark-fill me-2"></i>SAVED
-                </router-link>
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-chat-dots-fill me-2"></i>MESSAGES
-                </router-link>
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-bell-fill me-2"></i>NOTIFICATIONS
-                </router-link>
-
-                <router-link to="/post/create" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-upload me-2"></i>UPLOAD
-                </router-link>
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-gear-fill me-2"></i>SETTINGS
-                </router-link>
-
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
-                    <i class="bi bi-person-fill me-2"></i>PROFILE
-                </router-link>
-
-            </div>
+                </div>
         </div>
     </header>
 </template>
 
 <style scoped>
 /* Seus estilos originais mantidos */
-.navbar-wrapper {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.navbar {
-    background-color: var(--bg-dark, #1a1a1a);
-}
-
-.navbar-divider {
-    border: none;
-    border-top: 1px solid var(--text-muted, #333);
-    opacity: 0.5;
-}
-
-.logo-icon {
-    color: var(--primary-color, #ff69b4);
-    font-size: 1.5rem;
-}
-
-.logo-text {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--text-white, #fff);
-}
-
-.nav-link {
-    color: var(--text-secondary, #aaa) !important;
-    font-size: 1rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.nav-link:hover {
-    color: var(--text-white, #fff) !important;
-}
-
-.live-link {
-    color: #4ade80 !important;
-}
-
-.live-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #4ade80;
-    border-radius: 50%;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-}
-
-.menu-btn {
-    background-color: var(--primary-color, #ff69b4) !important;
-    border: none;
-    padding: 0.4rem 0.6rem;
-}
-
-.mobile-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: var(--bg-dark, #1a1a1a);
-    border-top: 1px solid var(--text-muted, #444);
-    z-index: 999;
-}
+.navbar-wrapper { position: sticky; top: 0; z-index: 1000; }
+.navbar { background-color: var(--bg-dark, #1a1a1a); }
+.navbar-divider { border: none; border-top: 1px solid var(--text-muted, #333); opacity: 0.5; }
+.logo-icon { color: var(--primary-color, #ff69b4); font-size: 1.5rem; }
+.logo-text { font-size: 1.75rem; font-weight: 700; color: var(--text-white, #fff); }
+.nav-link { color: var(--text-secondary, #aaa) !important; font-size: 1rem; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+.nav-link:hover { color: var(--text-white, #fff) !important; }
+.live-link { color: #4ade80 !important; }
+.live-dot { width: 8px; height: 8px; background-color: #4ade80; border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.menu-btn { background-color: var(--primary-color, #ff69b4) !important; border: none; padding: 0.4rem 0.6rem; }
+.mobile-menu { position: absolute; top: 100%; left: 0; right: 0; background-color: var(--bg-dark, #1a1a1a); border-top: 1px solid var(--text-muted, #444); z-index: 999; }
 
 /* Overlay styles */
 .search-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-color: rgba(26, 26, 26, 0.95);
     z-index: 1050;
     display: flex;
@@ -345,9 +235,7 @@ const goToResult = (item: SearchResult) => {
     cursor: pointer;
 }
 
-.btn-close-search:hover {
-    color: var(--text-white, #fff);
-}
+.btn-close-search:hover { color: var(--text-white, #fff); }
 
 .search-input-wrapper {
     position: relative;
@@ -369,8 +257,7 @@ const goToResult = (item: SearchResult) => {
     color: var(--text-white, #fff);
     padding: 0.75rem 1rem 0.75rem 2.75rem;
     font-size: 1rem;
-    width: 100%;
-    /* Garante largura total */
+    width: 100%; /* Garante largura total */
 }
 
 .search-input:focus {

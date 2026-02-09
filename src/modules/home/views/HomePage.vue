@@ -70,10 +70,8 @@ import { storeToRefs } from 'pinia'
 import { useHomeStore } from '../store/home.store'
 import PostCard from '../components/PostCard.vue'
 import { onUnmounted, watch, ref } from 'vue'
-import { useAuthStore } from '../../auth/store/auth.store'
 import NavBar from '../../../core/components/NavBar.vue'
 
-const authStore = useAuthStore()
 const homeStore = useHomeStore()
 const { posts, status, nextPage } = storeToRefs(homeStore)
 
@@ -121,10 +119,7 @@ onUnmounted(() => {
         observer.disconnect(); // Desconecta TODAS as observações
     }
 });
-watch(() => authStore.user, (newName) => {
-    console.log(authStore.user?.name)
-    console.log(newName)
-});
+
 </script>
 
 

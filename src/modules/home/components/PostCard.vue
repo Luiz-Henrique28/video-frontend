@@ -2,7 +2,7 @@
   <div :id="id">
     <!-- Thumbnail quadrada -->
     <div class="post-thumbnail-container position-relative w-100">
-        <a :href="'/post/' + id" class="d-block">
+        <router-link :to="'/post/' + id" class="d-block">
 
         <div class="thumbnail-wrapper position-relative">
           <img :src="thumbnail_path" :alt="caption" class="w-100 h-100 object-cover rounded" loading="lazy" />
@@ -24,16 +24,16 @@
           </div>
 
         </div>
-      </a>
+      </router-link>
     </div>
 
     <!-- Informações do usuário -->
     <div class="d-flex align-items-start mt-2 col-12">
       <img :src="user?.avatar" :alt="user?.name + ' avatar'" class="user-avatar rounded-circle me-2 flex-shrink-0" />
       <div class="flex-column">
-        <a :href="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
+        <router-link :to="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
           {{ caption }}
-        </a>
+        </router-link>
         <span class="text-start d-block text-truncate post-username post-username-size">{{ user?.name }}</span>
       </div>
     </div>
@@ -41,8 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import {  } from 'vue';
-
 const props = defineProps({
   id: { type: String, required: true },
   userId: { type: Number, required: true },

@@ -14,7 +14,8 @@ export const useAuthStore = defineStore('auth', {
         user: null as UserModel | null,
         token: '' as string,
         status: 'initial' as Status,
-        error: '' as string
+        error: '' as string,
+        hasCheckedAuth: false
     }),
     actions: {
         async handleGoogleLogin() {
@@ -62,14 +63,19 @@ export const useAuthStore = defineStore('auth', {
 
         async initAuth() {
             const token = localStorage.getItem('token');
+            this.status = 'loading';
 
-            this.status = 'ready'
-
-            if (!token) return;
+            if (!token) {
+                this.hasCheckedAuth = true;
+                this.status = 'ready';
+                return;
+            }
 
             this.token = token;
+            await this.fetchUser();
 
-            if (window.location.pathname === '/') router.push('/home')
+            this.hasCheckedAuth = true;
+            this.status = 'ready';
         },
 
         async logout() {
@@ -84,21 +90,14 @@ export const useAuthStore = defineStore('auth', {
             this.user = null;
             this.token = '';
             this.status = 'initial';
+            this.hasCheckedAuth = false;
             localStorage.removeItem('token');
             router.push('/');
         },
     },
 
     getters: {
-
-        // complete = auth + oneboarding
-        // incomplete = auth
-        // authLevel: (state) => state.user
-        //     ? (state.user.name ? 'complete' : 'incomplete')
-        //     : 'guest',
-
-
-        isAuthenticated: (state) => !!state.token,
+        isAuthenticated: (state) => !!state.user,
         hasUsername: (state) => !!state.user?.name,
 
         isProfileComplete(): boolean {

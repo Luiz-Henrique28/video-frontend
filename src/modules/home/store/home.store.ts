@@ -18,8 +18,6 @@ export const useHomeStore = defineStore('home', {
                 this.status = 'loading'
                 const result = await getPosts()
 
-                console.log(result)
-
                 this.posts = result.data
                 this.nextPage = result.next_page_url
 
