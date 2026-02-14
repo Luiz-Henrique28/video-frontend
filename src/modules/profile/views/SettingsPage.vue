@@ -24,7 +24,6 @@ const options = ref({
 
 // Loading states
 const isUpdatingUsername = ref(false);
-const isUpdatingBio = ref(false);
 const isUpdatingPassword = ref(false);
 
 // Messages
@@ -63,18 +62,6 @@ const updateUsername = async () => {
         showMessage(error.response?.data?.message || 'Error updating username', true);
     } finally {
         isUpdatingUsername.value = false;
-    }
-};
-
-const updateBio = async () => {
-    isUpdatingBio.value = true;
-    try {
-        await http.put('/user/bio', { bio: bio.value });
-        showMessage('Bio updated successfully!');
-    } catch (error: any) {
-        showMessage(error.response?.data?.message || 'Error updating bio', true);
-    } finally {
-        isUpdatingBio.value = false;
     }
 };
 

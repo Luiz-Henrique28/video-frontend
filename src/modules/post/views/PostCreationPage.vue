@@ -129,7 +129,7 @@ import { storeToRefs } from 'pinia'
 import { usePostCreationStore } from '../store/postCreation.store'
 
 const postStore = usePostCreationStore()
-const { title, files, status, tag, tags, progress, visibility, hasFiles, getCountOfImages, getCountOfVideos, hasTags, error } = storeToRefs(postStore)
+const { title, files, status, tag, tags, progress, visibility, hasFiles, getCountOfImages, getCountOfVideos, hasTags } = storeToRefs(postStore)
 
 function selectFile(e: Event) {
     const input = e.target as HTMLInputElement

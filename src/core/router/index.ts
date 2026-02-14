@@ -5,17 +5,17 @@ import PostDetailPage from '../../modules/post/views/PostDetailPage.vue'
 import WelcomePage from '../../modules/auth/views/WelcomePage.vue'
 import ProfilePage from '../../modules/profile/views/ProfilePage.vue'
 import SettingsPage from '../../modules/profile/views/SettingsPage.vue'
-import chooseUsername from '../../modules/auth/views/chooseUsername.vue'
+import ChooseUsernamePage from '../../modules/auth/views/ChooseUsernamePage.vue'
 import { useAuthStore } from '../../modules/auth/store/auth.store'
 
 const routes = [
     { path: '/', name: 'welcome', component: WelcomePage, meta: { guestOnly: true } },
-    { path: '/chooseUsername', name: 'chooseUsername', component: chooseUsername, meta: { incompleteProfileOnly: true } },
+    { path: '/chooseUsername', name: 'chooseUsername', component: ChooseUsernamePage, meta: { incompleteProfileOnly: true } },
     { path: '/home', name: 'home', component: HomePage },
 
     { path: '/post/create', name: 'postCreation', component: PostCreationPage, meta: { requiresAuth: true } },
     { path: '/post/:id', name: 'postDetail', component: PostDetailPage },
-    { path: '/profile', name: 'profile', component: ProfilePage }, // esse aqui tem que ter uma atencao especial, pq como guest da pra ver o o profile dos usuarios mas nao o proprio. Talvez deixar guest only e caso tente acessar o proprio ira da erro e faz um redirect
+    { path: '/profile', name: 'profile', component: ProfilePage },
     { path: '/settings', name: 'settings', component: SettingsPage, meta: { requiresAuth: true } },
 ]
 
@@ -24,11 +24,10 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach(async (to, _, next) => {//validacao para guest esta ok
+router.beforeEach(async (to, _, next) => {
     const authStore = useAuthStore();
 
     if (!authStore.hasCheckedAuth){
-        console.log("passou pelo guard")
         await authStore.initAuth();
     } 
 

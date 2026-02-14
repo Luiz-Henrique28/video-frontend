@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   id: { type: String, required: true },
   userId: { type: Number, required: true },
   caption: { type: String, default: '' },

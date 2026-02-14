@@ -192,7 +192,7 @@
 
 import { storeToRefs } from 'pinia'
 import { usePostDetailStore } from '../store/postDetail.store'
-import { onMounted, onUnmounted, watch, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 
