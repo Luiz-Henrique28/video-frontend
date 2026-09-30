@@ -21,18 +21,19 @@ export const useAuthStore = defineStore('auth', {
         async handleGoogleLogin() {
 
             try {
-                // in here open popup
+                this.status = 'loading';
+                
+                // Open Firebase popup
                 const result = await signInWithPopup(auth, googleProvider);
                 const token = await result.user.getIdToken();
 
-                this.status = 'loading'
-
+                // Send token to Laravel to validate and generate Sanctum token
                 const response = await http.post(`auth/firebase`, {
                     firebase_token: token
                 });
 
                 if (!response?.data?.token || !response?.data?.user) {
-                    throw new Error('Resposta inválida do servidor');
+                    throw new Error('Invalid response from server');
                 }
 
                 this.status = 'success';
@@ -46,8 +47,12 @@ export const useAuthStore = defineStore('auth', {
                 router.push('/home');
 
             } catch (error) {
-                console.error("Erro completo:", error);
-                this.error = String(error)
+                console.error("Authentication error:", error);
+                this.error = String(error);
+                this.status = 'error';
+                
+                // Ensure Firebase does not remain signed in if backend fails
+                await signOut(auth).catch(() => {});
             }
         },
 
@@ -56,8 +61,8 @@ export const useAuthStore = defineStore('auth', {
                 const { data } = await http.get('auth/me');
                 this.user = data;
             } catch (error) {
-                console.error("Token inválido ao buscar user");
-                this.logout();
+                console.error("Invalid token when fetching user");
+                await this.logout();
             }
         },
 
@@ -79,12 +84,13 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async logout() {
-
             try {
-                http.post(`auth/logout`)
-                await signOut(auth)
+                if (this.token) {
+                    await http.post(`auth/logout`).catch(() => {});
+                }
+                await signOut(auth).catch(() => {});
             } catch (error) {
-                this.error = String(error)
+                this.error = String(error);
             }
 
             this.user = null;
