@@ -10,7 +10,7 @@
 
             <div class="d-flex align-items-center mb-2 mb-md-0 flex-nowrap">
                 <div class="avatar-circle me-2 flex-shrink-0">
-                    <span>I</span>
+                    <span>{{ post?.user?.name ? post.user.name.charAt(0).toUpperCase() : 'U' }}</span>
                 </div>
 
                 <a href="#" class="username me-3 text-truncate"> {{ post?.user?.name }} </a>
@@ -24,34 +24,48 @@
                 </button>
             </div>
 
-            <div class="post-stats d-flex align-items-center text-secondary small ms-auto">
+            <div class="post-stats d-flex align-items-center gap-2 text-secondary small ms-auto">
 
-                <div v-if="post && post.image_count > 0" class="d-flex align-items-center me-2">
-                    <i class="bi bi-camera-fill me-1"></i>
+                <div v-if="post && post.image_count > 0" class="d-flex align-items-center gap-1 me-1">
+                    <i class="bi bi-camera-fill"></i>
                     <span>{{ post?.image_count }}</span>
                 </div>
 
-                <div v-if="post && post.video_count > 0" class="d-flex align-items-center me-2">
-                    <i class="bi bi-camera-video-fill me-1"></i>
+                <div v-if="post && post.video_count > 0" class="d-flex align-items-center gap-1 me-1">
+                    <i class="bi bi-camera-video-fill"></i>
                     <span>{{ post?.video_count }}</span>
                 </div>
 
-                <div class="d-flex align-items-center me-2">
-                    <i class="bi bi-eye-fill me-1"></i> 230,8k
+                <div class="d-flex align-items-center gap-1 me-1">
+                    <i class="bi bi-eye-fill"></i>
+                    <span>230,8k</span>
                 </div>
 
-                <!-- TODO: todas as funcionalidades abaixo -->
-                <div class="action-icons me-1 d-flex align-items-center">
-                    <i class="bi bi-heart me-1"> </i>
+                <!-- Like button com Optimistic UI -->
+                <div 
+                    class="action-btn d-flex align-items-center gap-1" 
+                    :class="{ 'is-active': post?.is_liked }"
+                    @click="handleLike" 
+                    style="cursor: pointer;"
+                >
+                    <i class="bi" :class="post?.is_liked ? 'bi-heart-fill' : 'bi-heart'"></i>
+                    <span v-if="post && post.likes_count > 0" class="small fw-bold">{{ post.likes_count }}</span>
                 </div>
 
-                <div class="action-icons me-1 d-flex align-items-center">
-                    <i class="bi bi-arrow-repeat me-1"> 5</i>
+                <div class="action-btn d-flex align-items-center gap-1" style="cursor: pointer;">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <span class="small fw-bold">5</span>
                 </div>
 
-                <div class="action-icons d-flex gap-2">
+                <div class="action-btn d-flex align-items-center justify-content-center" style="cursor: pointer;">
                     <i class="bi bi-bookmark"></i>
+                </div>
+
+                <div class="action-btn d-flex align-items-center justify-content-center" style="cursor: pointer;">
                     <i class="bi bi-share-fill"></i>
+                </div>
+
+                <div class="action-btn d-flex align-items-center justify-content-center" style="cursor: pointer;">
                     <i class="bi bi-flag"></i>
                 </div>
             </div>
@@ -192,11 +206,13 @@
 
 import { storeToRefs } from 'pinia'
 import { usePostDetailStore } from '../store/postDetail.store'
+import { useAuthStore } from '../../auth/store/auth.store'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 
 const postDetailStore = usePostDetailStore()
+const authStore = useAuthStore()
 const { post, status } = storeToRefs(postDetailStore)
 const route = useRoute()
 
@@ -214,12 +230,25 @@ const addComment = async () => {
     if (!inputComment.value.trim()) return
     if (!post.value) return
 
-    const success = await postDetailStore.addComment(66, route.params.id, inputComment.value);
+    if (!authStore.isAuthenticated || !authStore.user?.id) {
+        alert('Você precisa estar logado para comentar')
+        return
+    }
+
+    const success = await postDetailStore.addComment(authStore.user.id, route.params.id, inputComment.value);
 
     if(success) {
         inputComment.value = ''
         isButtonVisible.value = false
     }
+}
+
+const handleLike = () => {
+    if (!authStore.isAuthenticated) {
+        alert('Você precisa estar logado para curtir um post')
+        return
+    }
+    postDetailStore.toggleLike()
 }
 </script>
 
@@ -308,23 +337,32 @@ input:disabled {
   background-color: var(--primary-hover);  /* ✅ Usando variável global */
 }
 
-.post-stats i {
-  font-size: 1rem;
-  color: var(--text-muted);  /* ✅ Usando variável global */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  user-select: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.action-icons i {
-  padding: 5px;
-  border: 1px solid var(--border-color);  /* ✅ Usando variável global */
-  border-radius: var(--radius-sm);  /* ✅ Usando variável global */
+.action-btn i {
   font-size: 0.9rem;
-  cursor: pointer;
-  transition: var(--transition-fast);  /* ✅ Usando variável global */
 }
 
-.action-icons i:hover {
-  border-color: var(--primary-color);  /* ✅ Usando variável global */
-  color: var(--primary-color);  /* ✅ Usando variável global */
+.action-btn.is-active {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.text-danger {
+  color: #ff4d6d !important;
 }
 
 .comment-input-wrapper input {
