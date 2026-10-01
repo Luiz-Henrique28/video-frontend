@@ -1,52 +1,49 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { useAuthStore } from '../../auth/store/auth.store';
-import { http } from '../../../core/services/http';
+import { useProfileStore } from '../store/profile.store';
 import NavBar from '../../../core/components/NavBar.vue';
+import UserAvatar from '../../../core/components/UserAvatar.vue';
 
+const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
+const profileStore = useProfileStore();
 
-const activeTab = ref<'all' | 'posts' | 'reposts'>('all');
-const userPosts = ref<any[]>([]);
-const isLoading = ref(false);
+const { profile, posts, status, isTogglingFollow } = storeToRefs(profileStore);
 
-const user = computed(() => authStore.user);
-
-const stats = ref({
-    posts: 0,
-    views: 0
+// O username vem da rota (:username) ou, na rota /profile sem param, do usuário autenticado
+const username = computed(() => {
+    return (route.params.username as string) || authStore.user?.name || '';
 });
 
-const fetchUserPosts = async () => {
-    if (!user.value) return;
+// É o próprio perfil do usuário autenticado?
+const isOwnProfile = computed(() => {
+    return authStore.user?.name === profile.value?.name;
+});
 
-    isLoading.value = true;
-    try {
-        const response = await http.get(`/user/${user.value.id}/posts`);
-        userPosts.value = response.data.data || response.data;
-        stats.value.posts = userPosts.value.length;
-    } catch (error) {
-        console.error('Erro ao carregar posts', error);
-    } finally {
-        isLoading.value = false;
+const handleFollow = () => {
+    if (!authStore.isAuthenticated) {
+        router.push('/');
+        return;
     }
+    profileStore.toggleFollow();
 };
 
-const filteredPosts = computed(() => {
-    if (activeTab.value === 'posts') {
-        return userPosts.value.filter(p => !p.is_repost);
-    } else if (activeTab.value === 'reposts') {
-        return userPosts.value.filter(p => p.is_repost);
-    }
-    return userPosts.value;
-});
+// Ao montar ou mudar de username, busca o perfil e os posts
+const loadProfile = async (name: string) => {
+    if (!name) return;
+    await profileStore.fetchProfile(name);
+    await profileStore.fetchPosts();
+};
 
-const getAvatarLetter = computed(() => {
-    return user.value?.name?.charAt(0).toUpperCase() || 'U';
-});
+onMounted(() => loadProfile(username.value));
 
-onMounted(() => {
-    fetchUserPosts();
+// Suporta navegação entre perfis sem recarregar o componente
+watch(username, (newName) => {
+    if (newName) loadProfile(newName);
 });
 </script>
 
@@ -54,99 +51,116 @@ onMounted(() => {
     <NavBar />
 
     <div class="profile-page">
-        <div class="profile-header text-center py-4">
+
+        <!-- Loading state -->
+        <div v-if="status === 'loading'" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="status === 'error'" class="text-center py-5 text-muted">
+            <i class="bi bi-exclamation-circle fs-1 d-block mb-2"></i>
+            <p>Usuário não encontrado</p>
+        </div>
+
+        <!-- Profile loaded -->
+        <div v-else-if="profile" class="profile-header text-center py-4">
+
             <!-- Avatar -->
-            <div class="avatar-wrapper mx-auto mb-3">
-                <img
-                    v-if="user?.avatar"
-                    :src="user.avatar"
-                    :alt="user.name"
-                    class="avatar-img"
-                />
-                <div v-else class="avatar-placeholder">
-                    {{ getAvatarLetter }}
-                </div>
+            <div class="mb-3 d-flex justify-content-center">
+                <UserAvatar :name="profile.name" :avatarUrl="profile.avatar" :size="96" />
             </div>
 
             <!-- Username -->
-            <h2 class="username text-primary mb-3">{{ user?.name }}</h2>
+            <h2 class="username mb-3">{{ profile.name }}</h2>
 
-            <!-- Action Button -->
-            <router-link to="/settings" class="btn btn-dark btn-options mb-4">
-                <i class="bi bi-three-dots"></i>
-            </router-link>
-
-            <!-- Stats -->
+            <!-- Stats: followers, following, posts -->
             <div class="stats d-flex justify-content-center gap-4 mb-4">
-                <div class="stat-item d-flex align-items-center gap-2">
-                    <i class="bi bi-grid-3x3"></i>
-                    <span>{{ stats.posts }}</span>
+                <div class="stat-item d-flex flex-column align-items-center">
+                    <span class="stat-number">{{ profile.posts_count }}</span>
+                    <span class="stat-label">Posts</span>
                 </div>
-                <div class="stat-item d-flex align-items-center gap-2">
-                    <i class="bi bi-eye"></i>
-                    <span>{{ stats.views }}</span>
+                <div class="stat-item d-flex flex-column align-items-center">
+                    <span class="stat-number">{{ profile.followers_count }}</span>
+                    <span class="stat-label">Seguidores</span>
+                </div>
+                <div class="stat-item d-flex flex-column align-items-center">
+                    <span class="stat-number">{{ profile.following_count }}</span>
+                    <span class="stat-label">Seguindo</span>
                 </div>
             </div>
 
-            <!-- Tabs -->
-            <div class="tabs d-flex justify-content-center gap-4">
-                <button
-                    :class="['tab-btn', { active: activeTab === 'all' }]"
-                    @click="activeTab = 'all'"
+            <!-- Action Button -->
+            <div class="mb-4">
+
+                <!-- Perfil próprio: botão de settings -->
+                <router-link
+                    v-if="isOwnProfile"
+                    to="/settings"
+                    class="btn btn-outline-secondary btn-action"
                 >
-                    ALL
-                </button>
+                    <i class="bi bi-three-dots me-1"></i> Editar Perfil
+                </router-link>
+
+                <!-- Perfil alheio: botão de follow/unfollow -->
                 <button
-                    :class="['tab-btn', { active: activeTab === 'posts' }]"
-                    @click="activeTab = 'posts'"
+                    v-else-if="authStore.isAuthenticated"
+                    class="btn btn-action"
+                    :class="profile.is_following ? 'btn-following' : 'btn-follow'"
+                    :disabled="isTogglingFollow"
+                    @click="handleFollow"
+                    :id="`follow-btn-${profile.id}`"
                 >
-                    {{ stats.posts }} POSTS
+                    <span v-if="isTogglingFollow" class="spinner-border spinner-border-sm me-1"></span>
+                    <span v-else>
+                        <i class="bi" :class="profile.is_following ? 'bi-person-check-fill' : 'bi-person-plus-fill'"></i>
+                    </span>
+                    {{ profile.is_following ? 'Seguindo' : 'Seguir' }}
                 </button>
-                <button
-                    :class="['tab-btn', { active: activeTab === 'reposts' }]"
-                    @click="activeTab = 'reposts'"
+
+                <!-- Visitante não autenticado -->
+                <router-link
+                    v-else
+                    to="/"
+                    class="btn btn-follow btn-action"
                 >
-                    0 REPOSTS
-                </button>
+                    <i class="bi bi-person-plus-fill me-1"></i> Seguir
+                </router-link>
             </div>
         </div>
 
         <!-- Posts Grid -->
-        <div class="posts-container p-3">
-            <div v-if="isLoading" class="text-center py-5">
-                <div class="spinner-border text-primary" role="status"></div>
-            </div>
-
-            <div v-else-if="filteredPosts.length === 0" class="text-center py-5 text-muted">
+        <div v-if="profile" class="posts-container p-3">
+            <div v-if="posts.length === 0 && status !== 'loading'" class="text-center py-5 text-muted">
                 <i class="bi bi-camera fs-1 d-block mb-2"></i>
-                <p>No posts yet</p>
+                <p>Nenhum post ainda</p>
             </div>
 
             <div v-else class="row g-2">
                 <div
-                    v-for="post in filteredPosts"
+                    v-for="post in posts"
                     :key="post.id"
-                    class="col-6"
+                    class="col-6 col-md-4"
                 >
                     <router-link :to="`/post/${post.id}`" class="post-card">
                         <img
                             :src="post.thumbnail_path || post.first_media?.file_path"
                             :alt="post.caption"
                             class="post-thumbnail"
+                            loading="lazy"
                         />
                         <div class="post-overlay">
                             <div class="post-stats d-flex gap-3">
-                                <span><i class="bi bi-eye"></i> {{ post.view_count || 0 }}</span>
-                                <span><i class="bi bi-camera"></i> {{ post.image_count || 0 }}</span>
+                                <span v-if="post.image_count > 0"><i class="bi bi-camera"></i> {{ post.image_count }}</span>
+                                <span v-if="post.video_count > 0"><i class="bi bi-camera-video"></i> {{ post.video_count }}</span>
                             </div>
                         </div>
-                        <p class="post-caption text-truncate mt-1 mb-0 small">
-                            {{ post.caption }}
-                        </p>
+                        <p class="post-caption text-truncate mt-1 mb-0 small">{{ post.caption }}</p>
                     </router-link>
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -188,47 +202,54 @@ onMounted(() => {
     font-weight: 600;
 }
 
-.btn-options {
-    border-radius: 20px;
-    padding: 0.5rem 1.5rem;
-    background-color: #333;
-    border: none;
-}
-
-.btn-options:hover {
-    background-color: #444;
-}
-
 .stat-item {
-    color: var(--text-secondary, #aaa);
-    font-size: 1rem;
+    min-width: 70px;
 }
 
-.tabs {
-    border-bottom: 1px solid #333;
-    padding-bottom: 0.5rem;
-}
-
-.tab-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary, #aaa);
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.tab-btn:hover {
+.stat-number {
+    font-size: 1.2rem;
+    font-weight: 700;
     color: var(--text-white, #fff);
 }
 
-.tab-btn.active {
-    color: var(--primary-color, #ff69b4);
-    border-bottom: 2px solid var(--primary-color, #ff69b4);
+.stat-label {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #aaa);
 }
 
+/* ── Botões de ação ── */
+.btn-action {
+    border-radius: 20px;
+    padding: 0.45rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    min-width: 130px;
+}
+
+.btn-follow {
+    background-color: var(--primary-color, #ff69b4);
+    border: none;
+    color: #fff;
+}
+
+.btn-follow:hover:not(:disabled) {
+    filter: brightness(1.1);
+    color: #fff;
+}
+
+.btn-following {
+    background-color: transparent;
+    border: 1.5px solid var(--text-secondary, #aaa);
+    color: var(--text-secondary, #aaa);
+}
+
+.btn-following:hover:not(:disabled) {
+    border-color: #ff4d6d;
+    color: #ff4d6d;
+}
+
+/* ── Grid de posts ── */
 .post-card {
     display: block;
     position: relative;
@@ -249,7 +270,7 @@ onMounted(() => {
     left: 0;
     right: 0;
     padding: 0.5rem;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
     border-radius: 0 0 8px 8px;
 }
 

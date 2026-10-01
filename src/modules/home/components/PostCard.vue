@@ -29,18 +29,24 @@
 
     <!-- Informações do usuário -->
     <div class="d-flex align-items-start mt-2 col-12">
-      <img :src="user?.avatar" :alt="user?.name + ' avatar'" class="user-avatar rounded-circle me-2 flex-shrink-0" />
+      <UserAvatar :name="user?.name" :avatarUrl="user?.avatar" :size="36" class="me-2" />
       <div class="flex-column">
         <router-link :to="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
           {{ caption }}
         </router-link>
-        <span class="text-start d-block text-truncate post-username post-username-size">{{ user?.name }}</span>
+        <router-link
+          v-if="user?.name"
+          :to="'/profile/' + user.name"
+          class="text-start d-block text-truncate post-username post-username-size text-decoration-none"
+        >{{ user?.name }}</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import UserAvatar from '../../../core/components/UserAvatar.vue';
+
 defineProps({
   id: { type: String, required: true },
   userId: { type: Number, required: true },

@@ -15,7 +15,13 @@ const routes = [
 
     { path: '/post/create', name: 'postCreation', component: PostCreationPage, meta: { requiresAuth: true } },
     { path: '/post/:id', name: 'postDetail', component: PostDetailPage },
-    { path: '/profile', name: 'profile', component: ProfilePage },
+
+    // Perfil próprio (auth obrigatória — redireciona pelo username do store)
+    { path: '/profile', name: 'myProfile', component: ProfilePage, meta: { requiresAuth: true } },
+
+    // Perfil público de qualquer usuário (acessível sem auth)
+    { path: '/profile/:username', name: 'userProfile', component: ProfilePage },
+
     { path: '/settings', name: 'settings', component: SettingsPage, meta: { requiresAuth: true } },
 ]
 

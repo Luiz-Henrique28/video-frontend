@@ -1,5 +1,5 @@
 <template>
-    <!-- eu vou querer reformular algumas coisas apos comecar a passar os dados pra essa tela,  -->
+    <NavBar/>
     <main class="d-flex flex-column pb-5 main-content p-1">
 
         <div class="row mt-3 mb-2">
@@ -9,14 +9,28 @@
         <div id="postHeader" class="d-flex flex-wrap align-items-center justify-content-between mb-2">
 
             <div class="d-flex align-items-center mb-2 mb-md-0 flex-nowrap">
-                <div class="avatar-circle me-2 flex-shrink-0">
-                    <span>{{ post?.user?.name ? post.user.name.charAt(0).toUpperCase() : 'U' }}</span>
-                </div>
+                <UserAvatar :name="post?.user?.name" :avatarUrl="(post?.user as any)?.avatar" :size="35" class="me-2" />
 
-                <a href="#" class="username me-3 text-truncate"> {{ post?.user?.name }} </a>
+                <router-link
+                    v-if="post?.user?.name"
+                    :to="'/profile/' + post.user.name"
+                    class="username me-3 text-truncate"
+                >
+                    {{ post?.user?.name }}
+                </router-link>
 
-                <button class="btn btn-sm btn-pink fw-bold d-flex align-items-center me-2 flex-shrink-0">
-                    <i class="bi bi-plus-lg me-1"></i> FOLLOW
+                <button
+                    class="btn btn-sm fw-bold d-flex align-items-center me-2 flex-shrink-0"
+                    :class="profileStore.profile?.is_following ? 'btn-following-sm' : 'btn-pink'"
+                    :disabled="profileStore.isTogglingFollow"
+                    @click="handleFollow"
+                    id="post-detail-follow-btn"
+                >
+                    <span v-if="profileStore.isTogglingFollow" class="spinner-border spinner-border-sm me-1"></span>
+                    <template v-else>
+                        <i class="bi me-1" :class="profileStore.profile?.is_following ? 'bi-person-check-fill' : 'bi-plus-lg'"></i>
+                        {{ profileStore.profile?.is_following ? 'Seguindo' : 'Seguir' }}
+                    </template>
                 </button>
 
                 <button class="btn btn-sm btn-pink square-btn flex-shrink-0">
@@ -207,14 +221,19 @@
 import { storeToRefs } from 'pinia'
 import { usePostDetailStore } from '../store/postDetail.store'
 import { useAuthStore } from '../../auth/store/auth.store'
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useProfileStore } from '../../profile/store/profile.store'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import NavBar from '../../../core/components/NavBar.vue'
+import UserAvatar from '../../../core/components/UserAvatar.vue'
 
 
 const postDetailStore = usePostDetailStore()
 const authStore = useAuthStore()
+const profileStore = useProfileStore()
 const { post, status } = storeToRefs(postDetailStore)
 const route = useRoute()
+const router = useRouter()
 
 const inputComment = ref('')
 const isButtonVisible = ref(false)
@@ -250,6 +269,21 @@ const handleLike = () => {
     }
     postDetailStore.toggleLike()
 }
+
+const handleFollow = () => {
+    if (!authStore.isAuthenticated) {
+        router.push('/')
+        return
+    }
+    profileStore.toggleFollow()
+}
+
+// Ao carregar o post, carrega o perfil do criador para sincronizar is_following
+watch(post, async (newPost) => {
+    if (newPost?.user?.name) {
+        await profileStore.fetchProfile(newPost.user.name)
+    }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -335,6 +369,17 @@ input:disabled {
 
 .btn-pink:hover {
   background-color: var(--primary-hover);  /* ✅ Usando variável global */
+}
+
+.btn-following-sm {
+  background-color: transparent;
+  border: 1.5px solid var(--text-muted, #a0a0a0);
+  color: var(--text-muted, #a0a0a0);
+}
+
+.btn-following-sm:hover:not(:disabled) {
+  border-color: #ff4d6d;
+  color: #ff4d6d;
 }
 
 .action-btn {
