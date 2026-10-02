@@ -27,17 +27,17 @@
       </router-link>
     </div>
 
-    <!-- Informações do usuário -->
-    <div class="d-flex align-items-start mt-2 col-12">
-      <UserAvatar :name="user?.name" :avatarUrl="user?.avatar" :size="36" class="me-2" />
-      <div class="flex-column">
-        <router-link :to="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
-          {{ caption }}
-        </router-link>
+    <!-- Informações do usuário (ocultável via prop hideUser) -->
+    <div class="mt-2">
+      <router-link :to="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
+        {{ caption }}
+      </router-link>
+      <div v-if="!hideUser" class="d-flex align-items-center mt-1">
+        <UserAvatar :name="user?.name" :avatarUrl="user?.avatar" :to="user?.name ? `/profile/${user.name}` : null" :size="24" class="me-1" />
         <router-link
           v-if="user?.name"
           :to="'/profile/' + user.name"
-          class="text-start d-block text-truncate post-username post-username-size text-decoration-none"
+          class="text-start text-truncate post-username post-username-size text-decoration-none"
         >{{ user?.name }}</router-link>
       </div>
     </div>
@@ -54,7 +54,8 @@ defineProps({
   thumbnail_path: { type: String, default: null },
   user: { type: Object, required: true },
   imageCount: { type: Number, default: 0 },
-  videoCount: { type: Number, default: 0 }
+  videoCount: { type: Number, default: 0 },
+  hideUser: { type: Boolean, default: false },
 });
 </script>
 

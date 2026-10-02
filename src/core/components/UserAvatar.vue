@@ -1,7 +1,9 @@
 <template>
-  <div 
-    class="user-avatar-container" 
-    :class="customClass"
+  <component
+    :is="to ? 'router-link' : 'div'"
+    :to="to"
+    class="user-avatar-container"
+    :class="[customClass, { 'is-clickable': !!to }]"
     :style="sizeStyle"
   >
     <img
@@ -14,7 +16,7 @@
     <div v-else class="avatar-fallback" :style="fontSizeStyle">
       <span>{{ initialLetter }}</span>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -26,12 +28,14 @@ const props = withDefaults(
     avatarUrl?: string | null;
     size?: number | string;
     customClass?: string;
+    to?: string | object | null;
   }>(),
   {
     name: '',
     avatarUrl: null,
     size: 40,
     customClass: '',
+    to: null,
   }
 );
 
@@ -78,6 +82,16 @@ const fontSizeStyle = computed(() => {
   background-color: var(--bg-card, #2a2a2a);
   user-select: none;
   flex-shrink: 0;
+  text-decoration: none;
+}
+
+.is-clickable {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.is-clickable:hover {
+  opacity: 0.85;
 }
 
 .avatar-img {
