@@ -9,11 +9,15 @@
         <div id="postHeader" class="d-flex flex-wrap align-items-center justify-content-between mb-2">
 
             <div class="d-flex align-items-center mb-2 mb-md-0 flex-nowrap">
-                <UserAvatar :name="post?.user?.name" :avatarUrl="(post?.user as any)?.avatar" :size="35" class="me-2" />
+                <UserAvatar 
+                    :name="post?.user?.name" :avatarUrl="(post?.user as any)?.avatar"  
+                    :to="`/profile/${post?.user?.name}`"  
+                    :size="35" class="me-2" 
+                />
 
                 <router-link
                     v-if="post?.user?.name"
-                    :to="'/profile/' + post.user.name"
+                    :to="`/profile/${post?.user?.name}`"
                     class="username me-3 text-truncate"
                 >
                     {{ post?.user?.name }}
@@ -25,15 +29,16 @@
                     :disabled="profileStore.isTogglingFollow"
                     @click="handleFollow"
                     id="post-detail-follow-btn"
+                    v-if="post?.user?.id !== authStore.user?.id"
                 >
-                    <span v-if="profileStore.isTogglingFollow" class="spinner-border spinner-border-sm me-1"></span>
-                    <template v-else>
+                    <!-- <span v-if="profileStore.isTogglingFollow" class="spinner-border spinner-border-sm me-1"></span> -->
+                    <template>
                         <i class="bi me-1" :class="profileStore.profile?.is_following ? 'bi-person-check-fill' : 'bi-plus-lg'"></i>
                         {{ profileStore.profile?.is_following ? 'Seguindo' : 'Seguir' }}
                     </template>
                 </button>
 
-                <button class="btn btn-sm btn-pink square-btn flex-shrink-0">
+                <button v-if="post?.user?.id !== authStore.user?.id" class="btn btn-sm btn-pink square-btn flex-shrink-0">
                     <i class="bi bi-eye-slash-fill"></i>
                 </button>
             </div>
