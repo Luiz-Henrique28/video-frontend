@@ -1,6 +1,6 @@
 <template>
 
-    <!-- aqui vem a importacao de componente de navbar futuramente -->
+    <NavBar/>
 
     <main class="container-fluid d-flex flex-column my-3">
 
@@ -127,6 +127,7 @@
 
 import { storeToRefs } from 'pinia'
 import { usePostCreationStore } from '../store/postCreation.store'
+import NavBar from '../../../core/components/NavBar.vue'
 
 const postStore = usePostCreationStore()
 const { title, files, status, tag, tags, progress, visibility, hasFiles, getCountOfImages, getCountOfVideos, hasTags } = storeToRefs(postStore)
