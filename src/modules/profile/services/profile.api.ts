@@ -9,6 +9,7 @@ export type UserProfileModel = {
   followers_count: number;
   following_count: number;
   posts_count: number;
+  profile_views_count?: number;
   /** null = usuário não autenticado (perfil público) */
   is_following: boolean | null;
 };

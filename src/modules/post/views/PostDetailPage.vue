@@ -31,8 +31,8 @@
                     id="post-detail-follow-btn"
                     v-if="post?.user?.id !== authStore.user?.id"
                 >
-                    <!-- <span v-if="profileStore.isTogglingFollow" class="spinner-border spinner-border-sm me-1"></span> -->
-                    <template>
+                    <span v-if="profileStore.isTogglingFollow" class="spinner-border spinner-border-sm me-1"></span>
+                    <template v-else>
                         <i class="bi me-1" :class="profileStore.profile?.is_following ? 'bi-person-check-fill' : 'bi-plus-lg'"></i>
                         {{ profileStore.profile?.is_following ? 'Seguindo' : 'Seguir' }}
                     </template>
@@ -57,7 +57,7 @@
 
                 <div class="d-flex align-items-center gap-1 me-1">
                     <i class="bi bi-eye-fill"></i>
-                    <span>230,8k</span>
+                    <span>{{ formatCompactNumber(post?.views_count) }}</span>
                 </div>
 
                 <!-- Like button com Optimistic UI -->
@@ -68,7 +68,7 @@
                     style="cursor: pointer;"
                 >
                     <i class="bi" :class="post?.is_liked ? 'bi-heart-fill' : 'bi-heart'"></i>
-                    <span v-if="post && post.likes_count > 0" class="small fw-bold">{{ post.likes_count }}</span>
+                    <span v-if="post && post.likes_count > 0" class="small fw-bold">{{ formatCompactNumber(post.likes_count) }}</span>
                 </div>
 
                 <div class="action-btn d-flex align-items-center gap-1" style="cursor: pointer;">
@@ -231,6 +231,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NavBar from '../../../core/components/NavBar.vue'
 import UserAvatar from '../../../core/components/UserAvatar.vue'
+import { formatCompactNumber } from '../../../core/utils/formatters'
 
 
 const postDetailStore = usePostDetailStore()

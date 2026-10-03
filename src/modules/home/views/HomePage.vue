@@ -42,6 +42,7 @@
                             :caption="post.caption" 
                             :imageCount="post.image_count" 
                             :videoCount="post.video_count"
+                            :viewsCount="post.views_count"
                             :first_media="post.first_media" 
                             :user="post.user" 
                             />

@@ -65,6 +65,7 @@ type PostDetailModel = {
   image_count: number,
   video_count: number,
   likes_count: number,
+  views_count: number,
   is_liked: boolean,
   created_at: string  // Útil para "Postado há 3 dias"
   thumbnail_path: string | null

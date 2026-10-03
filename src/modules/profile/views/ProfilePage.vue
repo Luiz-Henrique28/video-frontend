@@ -7,6 +7,7 @@ import { useProfileStore } from '../store/profile.store';
 import NavBar from '../../../core/components/NavBar.vue';
 import UserAvatar from '../../../core/components/UserAvatar.vue';
 import PostCard from '../../home/components/PostCard.vue';
+import { formatCompactNumber } from '../../../core/utils/formatters';
 
 const route = useRoute();
 const router = useRouter();
@@ -168,22 +169,22 @@ watch(username, (newName) => {
 
                 <div class="d-flex align-items-center gap-1" title="Publicações">
                     <i class="bi bi-grid-fill"></i>
-                    <span class="fw-bold">{{ profile.posts_count }}</span>
+                    <span class="fw-bold">{{ formatCompactNumber(profile.posts_count) }}</span>
                 </div>
 
                 <div class="d-flex align-items-center gap-1" title="Visualizações">
                     <i class="bi bi-eye-fill"></i>
-                    <span class="fw-bold">230,8k</span>
+                    <span class="fw-bold">{{ formatCompactNumber(profile.profile_views_count) }}</span>
                 </div>
 
                 <div class="d-flex align-items-center gap-1" title="Seguidores">
                     <i class="bi bi-people-fill"></i>
-                    <span class="fw-bold">{{ profile.followers_count }}</span>
+                    <span class="fw-bold">{{ formatCompactNumber(profile.followers_count) }}</span>
                 </div>
 
                 <div class="d-flex align-items-center gap-1" title="Seguindo">
                     <i class="bi bi-person-check-fill"></i>
-                    <span class="fw-bold">{{ profile.following_count }}</span>
+                    <span class="fw-bold">{{ formatCompactNumber(profile.following_count) }}</span>
                 </div>
 
             </div>
@@ -209,7 +210,7 @@ watch(username, (newName) => {
                     style="cursor: pointer;"
                     class="fw-bold"
                 >
-                    {{ profile.posts_count }} PUBLICAÇÕES
+                    {{ formatCompactNumber(profile.posts_count) }} PUBLICAÇÕES
                 </div>
                 <div
                     :class="{ 'tab-active': activeTab === 'reposts' }"
@@ -238,6 +239,7 @@ watch(username, (newName) => {
                             :caption="post.caption"
                             :imageCount="post.image_count"
                             :videoCount="post.video_count"
+                            :viewsCount="post.views_count"
                             :user="post.user || profile"
                             :hideUser="true"
                         />

@@ -7,6 +7,13 @@
         <div class="thumbnail-wrapper position-relative">
           <img :src="thumbnail_path" :alt="caption" class="w-100 h-100 object-cover rounded" loading="lazy" />
 
+          <div class="post-views position-absolute bottom-0 start-0 p-2 d-flex align-items-center">
+            <div class="d-flex align-items-center bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small">
+              <i class="bi bi-eye-fill me-1"></i>
+              <span>{{ formatCompactNumber(viewsCount) }}</span>
+            </div>
+          </div>
+
           <div class="post-counts position-absolute bottom-0 end-0 p-2 d-flex align-items-center">
 
             <div v-if="imageCount > 0"
@@ -46,6 +53,7 @@
 
 <script setup lang="ts">
 import UserAvatar from '../../../core/components/UserAvatar.vue';
+import { formatCompactNumber } from '../../../core/utils/formatters';
 
 defineProps({
   id: { type: String, required: true },
@@ -55,6 +63,7 @@ defineProps({
   user: { type: Object, required: true },
   imageCount: { type: Number, default: 0 },
   videoCount: { type: Number, default: 0 },
+  viewsCount: { type: Number, default: 0 },
   hideUser: { type: Boolean, default: false },
 });
 </script>

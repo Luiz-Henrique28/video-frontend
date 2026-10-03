@@ -15,7 +15,8 @@ type CardPostModel = {
     },
     // Deve ser 'image_count' e 'video_count'
     image_count: any, 
-    video_count: any
+    video_count: any,
+    views_count?: number
 }
 
 type PaginetedResultModel = {
