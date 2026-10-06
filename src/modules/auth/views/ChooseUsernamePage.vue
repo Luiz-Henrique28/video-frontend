@@ -37,8 +37,6 @@ const submitUsername = async () => {
 
         if (authStore.user) authStore.user.name = username.value;
 
-        console.log("passou aqui", authStore.user?.name)
-        
         showMessage('Username saved successfully!');
         router.replace('/home');
 

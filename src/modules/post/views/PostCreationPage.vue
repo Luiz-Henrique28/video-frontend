@@ -8,7 +8,7 @@
 
             <div class="">
                 <input type="text" placeholder="Add a title" class="basic-input col-12 p-2" v-model="title"
-                    required></input>
+                    required>
             </div>
         </div>
 
@@ -42,9 +42,9 @@
                 <ul class="dropdown-menu">
                     <li class="dropdown-item"> <i class="bi bi-check-lg"></i> SAVE</li>
                     <li class="dropdown-item" v-if="visibility === 'private'" @click="postStore.changeVisibility()"><i
-                            class="bi bi-globe"></i> <span class="dropdonw-item"> MAKE PUBLIC </span></li>
+                            class="bi bi-globe"></i> <span> MAKE PUBLIC </span></li>
                     <li class="dropdown-item" v-else-if="visibility === 'public'" @click="postStore.changeVisibility()">
-                        <i class="bi bi-file-earmark-lock"></i> <span class="dropdonw-item"> MAKE PRIVATE </span>
+                        <i class="bi bi-file-earmark-lock"></i> <span> MAKE PRIVATE </span>
                     </li>
                     <li class="dropdown-item" href="#">DELETE</li>
                 </ul>
@@ -105,7 +105,7 @@
 
                     <!-- a forma como tirei o focus do input pode nao ser a melhor maneira -->
                     <input id="input-tag" type="text" placeholder="Add tags (entrer key to create it)"
-                        class="col-12 p-3 border-0 focus-ring focus-ring-dark" v-model="tag"></input>
+                        class="col-12 p-3 border-0 focus-ring focus-ring-dark" v-model="tag">
                 </label>
 
                 <div class="text-start">
@@ -135,8 +135,6 @@ const { title, files, status, tag, tags, progress, visibility, hasFiles, getCoun
 function selectFile(e: Event) {
     const input = e.target as HTMLInputElement
     const files = Array.from(input.files ?? [])
-
-    console.log(getCountOfImages)
 
     postStore.selectFile(files)
     input.value = ''

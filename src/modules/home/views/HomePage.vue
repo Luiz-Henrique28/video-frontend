@@ -95,7 +95,6 @@ watch(sentinelElement, (target) => {
 
         if (entry.isIntersecting) {
 
-            // console.log("tocou") esse log da pra ver bem o comportamento do carregamente atencipado da chegada ao fim da tela
             homeStore.getnextpage()
             // Para paginação infinita, geralmente você desconecta o observer 
             // logo após disparar o carregamento para evitar chamadas múltiplas.
