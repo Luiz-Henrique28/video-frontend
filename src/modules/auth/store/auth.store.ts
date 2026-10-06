@@ -7,6 +7,19 @@ import { http } from "../../../core/services/http";
 import router from '../../../core/router';
 import { type UserModel } from '../../post/services/post.api';
 
+/**
+ * Stable per-browser identifier sent as device_name on login, so the API
+ * only revokes this device's previous token instead of every session.
+ */
+function getDeviceName(): string {
+    let id = localStorage.getItem('device_id');
+    if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem('device_id', id);
+    }
+    return `web-${id}`;
+}
+
 type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error';
 
 export const useAuthStore = defineStore('auth', {
@@ -29,7 +42,8 @@ export const useAuthStore = defineStore('auth', {
 
                 // Send token to Laravel to validate and generate Sanctum token
                 const response = await http.post(`auth/firebase`, {
-                    firebase_token: token
+                    firebase_token: token,
+                    device_name: getDeviceName()
                 });
 
                 if (!response?.data?.token || !response?.data?.user) {
