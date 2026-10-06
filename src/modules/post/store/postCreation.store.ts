@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
-import { createPost, uploadMedia } from '../services/post.api';
+﻿import { defineStore } from 'pinia'
+import { createPost } from '../services/post.api';
 import axios, { CanceledError } from 'axios'
 
 type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error';
@@ -17,68 +17,47 @@ export const usePostCreationStore = defineStore('postCreation', {
         status: 'initial' as Status,
         error: '' as string,
         progress: 0 as number,
-        // abortCtrl: null as AbortController | null,
     }),
 
     actions: {
         selectFile(files: File[]) {
-
-            if (!files.length) { this.error = 'Formato não suportado'; return }
-            // talvez validar o tipo de arquivo aqui ou coisa do tipo
+            if (!files.length) { 
+                this.error = 'Formato não suportado'; 
+                return 
+            }
 
             this.files.push(...files)
             this.status = 'ready'
         },
 
         removeFile(file: File) {
-            // ou
-            // removeFile(i: number) { this.files.splice(i, 1) }
             this.files = this.files.filter(f => f !== file)
         },
 
         async sendFiles() {
+            if (!this.files.length) {
+                this.error = 'Selecione pelo menos um arquivo'
+                this.status = 'error'
+                return
+            }
 
             const postData = {
                 caption: this.title,
                 visibility: this.visibility,
-                tags: this.tags
+                tags: this.tags,
+                files: this.files
             }
 
             this.status = 'loading'
 
-
             try {
-                const result = await createPost(postData)
-                console.log("resultado do create post",result)
+                await createPost(postData, (pct) => {
+                    this.progress = pct
+                })
 
-                //this.abortCtrl = new AbortController()
-
-                if (result?.data.user_id && result?.data.id) {
-
-                    //this.abortCtrl = new AbortController()
-
-                    try {
-                        console.log("files que vao ser uplodadas" ,this.files)
-
-                        await uploadMedia(
-                            this.files,
-                            result?.data.id,
-                            result?.data.user_id,
-
-                            (pct) => (this.progress = pct),
-                            //this.abortCtrl.signal
-                        )
-                    } catch (e) {
-                        this.status = 'error'
-                        this.error = e as string
-                        console.log("caiu no catch")
-                    }
-
-                    this.status = 'success'
-                    this.reset()
-                }
+                this.status = 'success'
+                this.reset()
             } catch (err) {
-
                 if (err instanceof CanceledError || axios.isCancel?.(err)) {
                     this.status = 'canceled'
                 } else {
@@ -87,41 +66,39 @@ export const usePostCreationStore = defineStore('postCreation', {
                         ? (err.response?.data as any)?.message ?? err.message
                         : String(err)
                 }
-            } finally {
-                //this.abortCtrl = null
             }
-
         },
 
         insertTag(tag: string) {
             const formatedTag = tag.replace(/#/g, '').trim()
-
-            this.tags.push(formatedTag)
-            this.tag = ''
-
+            if (formatedTag) {
+                this.tags.push(formatedTag)
+                this.tag = ''
+            }
         },
 
-        removeTag(index:number) {
+        removeTag(index: number) {
             this.tags.splice(index, 1)
-            console.log(this.tags)
         },
-
-        // feature de cancelar mais para frente 
-        //cancel() {
-            //this.abortCtrl?.abort()
-            //this.status = 'initial'
-        //},
 
         changeVisibility() {
-            this.visibility === 'public' ? this.visibility = 'private' : this.visibility = 'public'
+            this.visibility = this.visibility === 'public' ? 'private' : 'public'
         },
 
         getPreviewUrl(file: File) {
             return URL.createObjectURL(file)
         },
 
-        reset() { this.files = []; this.progress = 0; this.status = 'initial'; this.error = '' },
-
+        reset() { 
+            this.files = []; 
+            this.progress = 0; 
+            this.status = 'initial'; 
+            this.error = '';
+            this.title = '';
+            this.tags = [];
+            this.tag = '';
+            this.visibility = 'public';
+        },
     },
 
     getters: {
@@ -130,5 +107,4 @@ export const usePostCreationStore = defineStore('postCreation', {
         getCountOfVideos: (s) => s.files.filter(f => f.type.startsWith('video/')).length,
         getCountOfImages: (s) => s.files.filter(f => f.type.startsWith('image/')).length
     }
-
 })

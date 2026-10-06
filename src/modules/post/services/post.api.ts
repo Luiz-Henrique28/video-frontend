@@ -1,28 +1,39 @@
-import { http } from "../../../core/services/http";
+﻿import { http } from "../../../core/services/http";
 
 type CreatePostData = {
   caption: string
-  visibility: 'public' | 'private'
+  visibility: "public" | "private"
   tags: string[]
+  files: File[]
 }
 
-function createPost(data: CreatePostData) {
-  return http.post<{ id: number }>("/post", {
-    caption: data.caption,
-    visibility: data.visibility,
-    tags: data.tags
-  });
+function createPost(data: CreatePostData, onProgress?: (pct: number) => void) {
+  const formData = new FormData()
+
+  formData.append("visibility", data.visibility)
+  if (data.caption) {
+    formData.append("caption", data.caption)
+  }
+
+  data.tags.forEach((tag) => formData.append("tags[]", tag))
+  data.files.forEach((file) => formData.append("files[]", file))
+
+  return http.post<{ id: number }>("/post", formData, {
+    onUploadProgress: (e) => {
+      const total = e.total ?? (data.files.reduce((a, f) => a + f.size, 0) || 1)
+      const pct = Math.min(100, Math.round((e.loaded * 100) / total))
+      onProgress?.(pct)
+    },
+  })
 }
 
 type AddCommentData = {
-  user_id: number
   post_id: number | string
   content: string
 }
 
 async function addComment(data: AddCommentData): Promise<CommentModel> {
   const response = await http.post("/comment", {
-    "user_id": data.user_id,
     "post_id": data.post_id,
     "content": data.content
   })
@@ -30,11 +41,10 @@ async function addComment(data: AddCommentData): Promise<CommentModel> {
   return response.data.result
 }
 
-// Types baseados na resposta da API (apenas campos essenciais para o frontend)
 type MediaModel = {
   id: number
   file_path: string
-  media_type: 'image' | 'video'
+  media_type: "image" | "video"
   order: number
 }
 
@@ -42,28 +52,28 @@ type CommentModel = {
   id: number
   user_id: number
   content: string
-  created_at: string  // Útil para mostrar "há 2 horas"
+  created_at: string
   user?: UserModel
 }
 
 type TagModel = {
   id: number
-  name: string  // Para exibir: #Laravel, #PHP, etc.
-  slug: string  // Para URLs: /tags/laravel, /tags/php
+  name: string
+  slug: string
 }
 
 type PostDetailModel = {
   id: number
   user_id: number
-  caption: string,
-  image_count: number,
-  video_count: number,
-  likes_count: number,
-  views_count: number,
-  is_liked: boolean,
-  created_at: string  // Útil para "Postado há 3 dias"
+  caption: string
+  image_count: number
+  video_count: number
+  likes_count: number
+  views_count: number
+  is_liked: boolean
+  created_at: string
   thumbnail_path: string | null
-  user: UserModel     // ← Dados do usuário incluídos
+  user: UserModel
   media: MediaModel[]
   comment: CommentModel[]
   tag: TagModel[]
@@ -76,53 +86,15 @@ type UserModel = {
   avatar: string
 }
 
-function uploadMedia(
-
-  files: File[],
-  postId: number | string,
-  onProgress?: (pct: number) => void,
-  signal?: AbortSignal
-
-) {
-  const formData = new FormData()
-
-  formData.append("post_id", String(postId));
-
-  files.forEach(file => formData.append("files[]", file));
-
-  return http.post("/media", formData, {
-    signal,
-
-    onUploadProgress: (e) => {
-      const total = (e.total) ?? (files.reduce((a, f) => a + f.size, 0) || 1)
-      const pct = Math.min(100, Math.round((e.loaded * 100) / total))
-      onProgress?.(pct)
-    },
-    // headers: {
-    //   "Content-Type": "multipart/form-data"
-    // }
-  });
-
-}
-
 async function getPostById(id: number | string): Promise<PostDetailModel> {
   const postResult = await http.get(`/post/${id}`)
   return postResult.data
 }
 
-
-
-// async function getUserById(id: number | string): Promise<UserModel> {
-//   const userResult = await http.get(`/user/${id}`)
-//   return userResult.data
-// }
-
 export {
   createPost,
-  uploadMedia,
   getPostById,
   addComment
-  // getUserById
 }
 
 export type {
