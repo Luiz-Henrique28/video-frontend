@@ -174,7 +174,7 @@ watch(username, (newName) => {
 
                 <div class="d-flex align-items-center gap-1" title="Visualizações">
                     <i class="bi bi-eye-fill"></i>
-                    <span class="fw-bold">{{ formatCompactNumber(profile.profile_views_count) }}</span>
+                    <span class="fw-bold">{{ formatCompactNumber(profile.total_views) }}</span>
                 </div>
 
                 <div class="d-flex align-items-center gap-1" title="Seguidores">
