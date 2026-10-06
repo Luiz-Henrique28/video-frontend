@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <NavBar/>
     <main class="d-flex flex-column pb-5 main-content p-1">
 
@@ -260,7 +260,7 @@ const addComment = async () => {
         return
     }
 
-    const success = await postDetailStore.addComment(authStore.user.id, route.params.id, inputComment.value);
+    const success = await postDetailStore.addComment(route.params.id, inputComment.value);
 
     if(success) {
         inputComment.value = ''

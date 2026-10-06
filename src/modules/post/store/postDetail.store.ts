@@ -1,4 +1,4 @@
-import { defineStore } from "pinia"
+﻿import { defineStore } from "pinia"
 import { getPostById, addComment } from "../services/post.api"
 import { likePost, unlikePost } from "../services/like.api"
 import type { PostDetailModel } from "../services/post.api"
@@ -31,13 +31,12 @@ export const usePostDetailStore = defineStore('postDetail', {
             }
         },
 
-        async addComment(userId: number, postId: any, content: string) {
+        async addComment(postId: any, content: string) {
             try {
                 this.status = 'loading'
 
                 const newComment = await addComment({
-                    user_id: userId,
-                    post_id: postId,
+                                        post_id: postId,
                     content: content
                 })
 
