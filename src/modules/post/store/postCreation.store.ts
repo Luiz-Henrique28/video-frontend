@@ -38,20 +38,17 @@ export const usePostCreationStore = defineStore('postCreation', {
 
         async sendFiles() {
 
-            const fakeJson = {
-                userId: 86, // TODO - isso aqui tem que vim do usuario logado
+            const postData = {
                 caption: this.title,
                 visibility: this.visibility,
                 tags: this.tags
             }
 
-            console.log(fakeJson)
-
             this.status = 'loading'
 
 
             try {
-                const result = await createPost(fakeJson)
+                const result = await createPost(postData)
                 console.log("resultado do create post",result)
 
                 //this.abortCtrl = new AbortController()
