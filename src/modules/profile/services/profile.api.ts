@@ -36,7 +36,11 @@ export async function getUserProfile(username: string): Promise<UserProfileModel
 export async function getUserPosts(userId: number, page = 1) {
   
   const response = await http.get(`/user/${userId}/posts`, { params: { page } });
-  return response.data;
+  const rawData = response.data;
+  if (rawData && !rawData.next_page_url && (rawData as any).links?.next) {
+      rawData.next_page_url = (rawData as any).links.next;
+  }
+  return rawData;
 }
 
 /**

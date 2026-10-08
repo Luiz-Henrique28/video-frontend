@@ -1,4 +1,4 @@
-﻿import { http } from "../../../core/services/http";
+import { http } from "../../../core/services/http";
 
 type CreatePostData = {
   caption: string
@@ -38,7 +38,7 @@ async function addComment(data: AddCommentData): Promise<CommentModel> {
     "content": data.content
   })
 
-  return response.data.result
+  return (response.data as any).data ?? response.data.result
 }
 
 type MediaModel = {
@@ -88,7 +88,7 @@ type UserModel = {
 
 async function getPostById(id: number | string): Promise<PostDetailModel> {
   const postResult = await http.get(`/post/${id}`)
-  return postResult.data
+  return (postResult.data as any).data ?? postResult.data
 }
 
 export {
