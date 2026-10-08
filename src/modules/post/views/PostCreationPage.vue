@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 
     <NavBar/>
 
@@ -55,18 +55,19 @@
 
             <div class="mb-3">
 
-                <!-- listagem de midias publicadas -->
+                <!-- Mensagem de erro de validacao ou envio -->
+                <div v-if="error" class="alert alert-danger my-3 py-2 px-3 small d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>{{ error }}</span>
+                </div>
+
+                <!-- listagem de midias selecionadas -->
                 <ul v-if="hasFiles" class="p-0">
-                    <li v-for="(file, i) in files" :key="i" class="list-unstyled position-relative w-100 mb-3">
-                        <!-- <span class="file-name">{{ file.name }}</span> -->
+                    <li v-for="item in items" :key="item.id" class="list-unstyled position-relative w-100 mb-3">
+                        <img v-if="item.type === 'image'" :src="item.previewUrl" class="w-100" />
+                        <video v-if="item.type === 'video'" controls :src="item.previewUrl" class="w-100"></video>
 
-                        <!-- <span class="file-size">{{ file.size }}</span> -->
-
-                        <img v-if="file.type.startsWith('image/')" :src="postStore.getPreviewUrl(file)" class="w-100">
-
-                        <video v-if="file.type.startsWith('video/')" controls="true" :src="postStore.getPreviewUrl(file)" class="w-100"></video>
-
-                        <button @click="postStore.removeFile(file)" class="btn-remove-media position-absolute top-0 end-0 m-2">
+                        <button @click="postStore.removeFile(item)" class="btn-remove-media position-absolute top-0 end-0 m-2" type="button">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </li>
@@ -79,12 +80,10 @@
 
                 <input type="file" name="" id="file-upload" multiple @change="selectFile">
 
-                <!-- dropdown de settings -->
-
-                <div v-if="status === 'loading'">
+                <!-- progresso de envio -->
+                <div v-if="status === 'loading'" class="mt-3">
                     <p>Enviando… {{ progress }}%</p>
-                    <progress :value="progress" max="100" />
-                    <!-- <button @click="postStore.cancel">Cancelar</button> -->
+                    <progress :value="progress" max="100" class="w-100" />
                 </div>
             </div>
 
@@ -101,20 +100,16 @@
                                 @click="postStore.removeTag(i)">x</button>
                         </li>
                     </ul>
-                    <!-- tags -->
 
-                    <!-- a forma como tirei o focus do input pode nao ser a melhor maneira -->
-                    <input id="input-tag" type="text" placeholder="Add tags (entrer key to create it)"
+                    <input id="input-tag" type="text" placeholder="Add tags (enter key to create it)"
                         class="col-12 p-3 border-0 focus-ring focus-ring-dark" v-model="tag">
                 </label>
-
-                <div class="text-start">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur eius eos
-                </div>
             </div>
 
             <div class="text-center mt-4">
-                <button id="saveBtn" @click="postStore.sendFiles()"><i class="bi bi-check-lg"></i> SAVE </button>
+                <button id="saveBtn" :disabled="status === 'loading'" @click="handleSave()">
+                    <i class="bi bi-check-lg"></i> {{ status === 'loading' ? 'SAVING...' : 'SAVE' }}
+                </button>
             </div>
 
         </div>
@@ -126,11 +121,14 @@
 <script setup lang="ts">
 
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+import { onBeforeUnmount } from 'vue'
 import { usePostCreationStore } from '../store/postCreation.store'
 import NavBar from '../../../core/components/NavBar.vue'
 
+const router = useRouter()
 const postStore = usePostCreationStore()
-const { title, files, status, tag, tags, progress, visibility, hasFiles, getCountOfImages, getCountOfVideos, hasTags } = storeToRefs(postStore)
+const { title, items, status, tag, tags, progress, visibility, error, hasFiles, getCountOfImages, getCountOfVideos, hasTags } = storeToRefs(postStore)
 
 function selectFile(e: Event) {
     const input = e.target as HTMLInputElement
@@ -139,6 +137,19 @@ function selectFile(e: Event) {
     postStore.selectFile(files)
     input.value = ''
 }
+
+async function handleSave() {
+    const postId = await postStore.sendFiles()
+    if (postId || postStore.status === 'success') {
+        router.push('/home')
+    }
+}
+
+onBeforeUnmount(() => {
+    if (postStore.status !== 'loading') {
+        postStore.reset()
+    }
+})
 
 </script>
 
@@ -219,8 +230,13 @@ function selectFile(e: Event) {
     transition: var(--transition-normal);
 }
 
-#saveBtn:hover {
+#saveBtn:hover:not(:disabled) {
     background-color: var(--primary-hover);
+}
+
+#saveBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .dropdown-menu {
