@@ -1,5 +1,4 @@
-import axios from "axios";
-import router from "../router";
+﻿import axios from "axios";
 
 export const http = axios.create({
     baseURL: `${import.meta.env.VITE_APP_URL_SERVER}/api/`,
@@ -9,6 +8,17 @@ export const http = axios.create({
         'X-Requested-With': 'XMLHttpRequest',
     },
 });
+
+type UnauthorizedListener = () => void;
+const unauthorizedListeners: UnauthorizedListener[] = [];
+
+export function onUnauthorized(listener: UnauthorizedListener): () => void {
+    unauthorizedListeners.push(listener);
+    return () => {
+        const index = unauthorizedListeners.indexOf(listener);
+        if (index !== -1) unauthorizedListeners.splice(index, 1);
+    };
+}
 
 // Interceptor de REQUISIÇÃO - adiciona token automaticamente
 http.interceptors.request.use(config => {
@@ -26,7 +36,11 @@ http.interceptors.response.use(
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            router.push('/');
+            unauthorizedListeners.forEach(fn => {
+                try {
+                    fn();
+                } catch {}
+            });
         }
         return Promise.reject(error);
     }

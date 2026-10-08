@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia'
+﻿import { defineStore } from 'pinia'
 
 import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "../../../firebase";
 
 import { http } from "../../../core/services/http";
 import router from '../../../core/router';
-import { type UserModel } from '../../post/services/post.api';
+import type { UserModel } from '../../../core/types';
 
 /**
  * Stable per-browser identifier sent as device_name on login, so the API
@@ -73,7 +73,7 @@ export const useAuthStore = defineStore('auth', {
         async fetchUser() {
             try {
                 const { data } = await http.get('auth/me');
-                this.user = data;
+                this.user = (data as any)?.data ?? data;
             } catch (error) {
                 console.error("Invalid token when fetching user");
                 await this.logout();
@@ -97,6 +97,15 @@ export const useAuthStore = defineStore('auth', {
             this.status = 'ready';
         },
 
+        resetAuth() {
+            this.user = null;
+            this.token = '';
+            this.status = 'initial';
+            this.hasCheckedAuth = false;
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        },
+
         async logout() {
             try {
                 if (this.token) {
@@ -107,11 +116,7 @@ export const useAuthStore = defineStore('auth', {
                 this.error = String(error);
             }
 
-            this.user = null;
-            this.token = '';
-            this.status = 'initial';
-            this.hasCheckedAuth = false;
-            localStorage.removeItem('token');
+            this.resetAuth();
             router.push('/');
         },
     },

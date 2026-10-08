@@ -1,4 +1,11 @@
-import { http } from "../../../core/services/http";
+﻿import { http } from "../../../core/services/http";
+import type {
+  PostDetailModel,
+  MediaModel,
+  CommentModel,
+  TagModel,
+  UserModel
+} from "../../../core/types";
 
 type CreatePostData = {
   caption: string
@@ -39,51 +46,6 @@ async function addComment(data: AddCommentData): Promise<CommentModel> {
   })
 
   return (response.data as any).data ?? response.data.result
-}
-
-type MediaModel = {
-  id: number
-  file_path: string
-  media_type: "image" | "video"
-  order: number
-}
-
-type CommentModel = {
-  id: number
-  user_id: number
-  content: string
-  created_at: string
-  user?: UserModel
-}
-
-type TagModel = {
-  id: number
-  name: string
-  slug: string
-}
-
-type PostDetailModel = {
-  id: number
-  user_id: number
-  caption: string
-  image_count: number
-  video_count: number
-  likes_count: number
-  views_count: number
-  is_liked: boolean
-  created_at: string
-  thumbnail_path: string | null
-  user: UserModel
-  media: MediaModel[]
-  comment: CommentModel[]
-  tag: TagModel[]
-}
-
-type UserModel = {
-  id: number
-  name: string
-  email: string
-  avatar: string
 }
 
 async function getPostById(id: number | string): Promise<PostDetailModel> {
