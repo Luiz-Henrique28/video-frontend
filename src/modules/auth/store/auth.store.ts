@@ -97,6 +97,14 @@ export const useAuthStore = defineStore('auth', {
             this.status = 'ready';
         },
 
+        async updateUsername(newName: string) {
+            const response = await http.patch('/user/username', { name: newName });
+            if (this.user) {
+                this.user.name = newName;
+            }
+            return response.data;
+        },
+
         resetAuth() {
             this.user = null;
             this.token = '';

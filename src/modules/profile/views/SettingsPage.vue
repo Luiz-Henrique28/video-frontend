@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../../auth/store/auth.store';
-import { http } from '../../../core/services/http';
+import {
+    updatePasswordApi,
+    updateOptionsApi,
+    updateAvatarApi
+} from '../services/profile.api';
 import NavBar from '../../../core/components/NavBar.vue';
 
 const authStore = useAuthStore();
@@ -53,11 +57,7 @@ const updateUsername = async () => {
 
     isUpdatingUsername.value = true;
     try {
-        await http.put('/user/username', { username: username.value });
-        showMessage('Username updated successfully!');
-        if (authStore.user) {
-            authStore.user.name = username.value;
-        }
+        await authStore.updateUsername(username.value.trim());
     } catch (error: any) {
         showMessage(error.response?.data?.message || 'Error updating username', true);
     } finally {
@@ -77,7 +77,7 @@ const updatePassword = async () => {
 
     isUpdatingPassword.value = true;
     try {
-        await http.put('/user/password', { password: password.value });
+        await updatePasswordApi(password.value);
         showMessage('Password updated successfully!');
         password.value = '';
         confirmPassword.value = '';
@@ -90,7 +90,7 @@ const updatePassword = async () => {
 
 const updateOptions = async () => {
     try {
-        await http.put('/user/options', options.value);
+        await updateOptionsApi(options.value);
         showMessage('Options updated successfully!');
     } catch (error: any) {
         showMessage(error.response?.data?.message || 'Error updating options', true);
@@ -106,7 +106,7 @@ const handleAvatarChange = async (event: Event) => {
     formData.append('avatar', file);
 
     try {
-        const response = await http.post('/user/avatar', formData);
+        const response = await updateAvatarApi(file);
         if (authStore.user && response.data.avatar) {
             authStore.user.avatar = response.data.avatar;
         }

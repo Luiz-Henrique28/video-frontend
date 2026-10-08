@@ -111,3 +111,24 @@ Posicionar blocos fixos de anúncio abaixo do player de mídia e acima da seçã
  * 
  * 
  */
+export async function updateUsernameApi(name: string) {
+  const response = await http.patch('/user/username', { name });
+  return response.data;
+}
+
+export async function updatePasswordApi(password: string) {
+  const response = await http.put('/user/password', { password });
+  return response.data;
+}
+
+export async function updateOptionsApi(options: Record<string, any>) {
+  const response = await http.put('/user/options', options);
+  return response.data;
+}
+
+export async function updateAvatarApi(file: File) {
+  const formData = new FormData();
+  formData.append('avatar', file);
+  const response = await http.post('/user/avatar', formData);
+  return response.data;
+}

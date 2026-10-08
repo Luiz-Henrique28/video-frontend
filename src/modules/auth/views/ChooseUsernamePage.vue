@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useAuthStore } from '../../auth/store/auth.store';
-import { http } from '../../../core/services/http';
-import router from '../../../core/router';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const authStore = useAuthStore();
 const username = ref(authStore.user?.name || '');
 const isSubmitting = ref(false);
@@ -33,9 +33,7 @@ const submitUsername = async () => {
 
     isSubmitting.value = true;
     try {
-        await http.patch('/user/username', { name: username.value })
-
-        if (authStore.user) authStore.user.name = username.value;
+        await authStore.updateUsername(username.value.trim());
 
         showMessage('Username saved successfully!');
         router.replace('/home');

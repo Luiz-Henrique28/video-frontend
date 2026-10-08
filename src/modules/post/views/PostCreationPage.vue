@@ -141,7 +141,7 @@ function selectFile(e: Event) {
 async function handleSave() {
     const postId = await postStore.sendFiles()
     if (postId || postStore.status === 'success') {
-        router.push('/home')
+        router.push('/profile')
     }
 }
 
@@ -291,3 +291,4 @@ onBeforeUnmount(() => {
     transform: scale(0.95);
 }
 </style>
+

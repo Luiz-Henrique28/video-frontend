@@ -1,16 +1,9 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../modules/auth/store/auth.store';
 import { useDebounceFn } from '@vueuse/core';
-import { http } from '../services/http';
-
-interface SearchResult {
-    id: number | string;
-    label: string;
-    type: 'user' | 'tag' | 'post' | 'search';
-    image?: string | null;
-}
+import { searchContent, type SearchResult } from '../services/search.api';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -30,10 +23,9 @@ const performSearch = useDebounceFn(async (query: string) => {
 
     isLoading.value = true;
     try {
-        const response = await http.get(`/search?q=${query}`);
-        searchResult.value = response.data;
-    } catch (error) {
-        console.error("Erro na busca", error);
+        const results = await searchContent(query);
+        searchResult.value = results;
+    } catch {
         searchResult.value = [];
     } finally {
         isLoading.value = false;
@@ -366,3 +358,4 @@ const goToResult = (item: SearchResult) => {
     background-color: #333;
 }
 </style>
+
