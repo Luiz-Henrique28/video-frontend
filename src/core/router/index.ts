@@ -1,28 +1,60 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import PostCreationPage from '../../modules/post/views/PostCreationPage.vue'
-import HomePage from '../../modules/home/views/HomePage.vue'
-import PostDetailPage from '../../modules/post/views/PostDetailPage.vue'
-import WelcomePage from '../../modules/auth/views/WelcomePage.vue'
-import ProfilePage from '../../modules/profile/views/ProfilePage.vue'
-import SettingsPage from '../../modules/profile/views/SettingsPage.vue'
-import ChooseUsernamePage from '../../modules/auth/views/ChooseUsernamePage.vue'
+﻿import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../../modules/auth/store/auth.store'
 
 const routes = [
-    { path: '/', name: 'welcome', component: WelcomePage, meta: { guestOnly: true } },
-    { path: '/chooseUsername', name: 'chooseUsername', component: ChooseUsernamePage, meta: { incompleteProfileOnly: true } },
-    { path: '/home', name: 'home', component: HomePage },
-
-    { path: '/post/create', name: 'postCreation', component: PostCreationPage, meta: { requiresAuth: true } },
-    { path: '/post/:id', name: 'postDetail', component: PostDetailPage },
-
-    // Perfil próprio (auth obrigatória — redireciona pelo username do store)
-    { path: '/profile', name: 'myProfile', component: ProfilePage, meta: { requiresAuth: true } },
-
-    // Perfil público de qualquer usuário (acessível sem auth)
-    { path: '/profile/:username', name: 'userProfile', component: ProfilePage },
-
-    { path: '/settings', name: 'settings', component: SettingsPage, meta: { requiresAuth: true } },
+    {
+        path: '/',
+        name: 'welcome',
+        component: () => import('../../modules/auth/views/WelcomePage.vue'),
+        meta: { guestOnly: true }
+    },
+    {
+        path: '/chooseUsername',
+        name: 'chooseUsername',
+        component: () => import('../../modules/auth/views/ChooseUsernamePage.vue'),
+        meta: { incompleteProfileOnly: true }
+    },
+    {
+        path: '/home',
+        name: 'home',
+        component: () => import('../../modules/home/views/HomePage.vue')
+    },
+    {
+        path: '/post/create',
+        name: 'postCreation',
+        component: () => import('../../modules/post/views/PostCreationPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/post/:id',
+        name: 'postDetail',
+        component: () => import('../../modules/post/views/PostDetailPage.vue')
+    },
+    // Perfil proprio (auth obrigatoria - redireciona pelo username do store)
+    {
+        path: '/profile',
+        name: 'myProfile',
+        component: () => import('../../modules/profile/views/ProfilePage.vue'),
+        meta: { requiresAuth: true }
+    },
+    // Perfil publico de qualquer usuario (acessivel sem auth)
+    {
+        path: '/profile/:username',
+        name: 'userProfile',
+        component: () => import('../../modules/profile/views/ProfilePage.vue')
+    },
+    {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('../../modules/profile/views/SettingsPage.vue'),
+        meta: { requiresAuth: true }
+    },
+    // Rota curinga para 404
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'notFound',
+        component: () => import('../views/NotFoundPage.vue')
+    }
 ]
 
 const router = createRouter({
