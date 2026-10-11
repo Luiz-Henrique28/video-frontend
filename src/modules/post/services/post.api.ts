@@ -45,7 +45,7 @@ async function addComment(data: AddCommentData): Promise<CommentModel> {
     "content": data.content
   })
 
-  return (response.data as any).data ?? response.data.result
+  return (response.data as any).data ?? response.data
 }
 
 async function getPostById(id: number | string): Promise<PostDetailModel> {

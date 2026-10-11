@@ -25,27 +25,34 @@ const showMessage = (message: string, isError = false) => {
 };
 
 const submitUsername = async () => {
-    if (!username.value.trim()) return;
-    if (username.value.trim().length < 3) {
+    const trimmed = username.value.trim();
+    if (!trimmed) return;
+    if (trimmed.length < 3) {
         showMessage('Username must be at least 3 characters', true);
+        return;
+    }
+    if (/\s/.test(trimmed)) {
+        showMessage('Username cannot contain spaces', true);
+        return;
+    }
+    const usernameRegex = /^(?![._-])(?!.*[._-]$)(?!.*[._-]{2})[A-Za-z0-9._-]+$/;
+    if (!usernameRegex.test(trimmed)) {
+        showMessage('Use only letters, numbers, and single . _ - (cannot start or end with symbols)', true);
         return;
     }
 
     isSubmitting.value = true;
     try {
-        await authStore.updateUsername(username.value.trim());
+        await authStore.updateUsername(trimmed);
 
         showMessage('Username saved successfully!');
         router.replace('/home');
 
     } catch (err: any) {
-
-        if (err.status === 422 || err.data?.type === 'validation') {
-            showMessage(err.response?.data?.message, true);
-            return;
-        }
-
-        showMessage(err.response?.data?.message || 'Error saving username', true);
+        const errorMsg = err.response?.data?.errors?.name?.[0]
+            || err.response?.data?.message
+            || 'Error saving username';
+        showMessage(errorMsg, true);
     } finally {
         isSubmitting.value = false;
     }

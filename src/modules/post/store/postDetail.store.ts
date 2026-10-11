@@ -41,7 +41,9 @@ export const usePostDetailStore = defineStore('postDetail', {
                 })
 
                 // Atualiza o estado local adicionando o novo comentário
-                if (this.post) this.post.comment.push(newComment)
+                if (newComment && this.post) {
+                    this.post.comment.push(newComment)
+                }
 
                 this.status = 'success'
                 return true

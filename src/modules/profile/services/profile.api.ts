@@ -27,7 +27,7 @@ export type FollowResponse = {
  */
 export async function getUserProfile(username: string): Promise<UserProfileModel> {
   const response = await http.get(`/user/${username}`);
-  return response.data.data;
+  return (response.data as any)?.data ?? response.data;
 }
 
 /**
