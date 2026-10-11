@@ -1,4 +1,4 @@
-﻿import type { UserModel } from './user.types';
+import type { UserModel } from './user.types';
 
 export interface MediaModel {
   id: number;
@@ -34,6 +34,7 @@ export interface PostDetailModel {
   likes_count: number;
   views_count: number;
   is_liked: boolean;
+  is_saved: boolean;
   created_at: string;
   thumbnail_path: string | null;
   user: UserModel;

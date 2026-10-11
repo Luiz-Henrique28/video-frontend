@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <NavBar/>
     <main class="d-flex flex-column pb-5 main-content p-1">
 
@@ -76,8 +76,14 @@
                     <span class="small fw-bold">5</span>
                 </div>
 
-                <div class="action-btn d-flex align-items-center justify-content-center" style="cursor: pointer;">
-                    <i class="bi bi-bookmark"></i>
+                <div 
+                    class="action-btn d-flex align-items-center justify-content-center" 
+                    :class="{ 'is-active': post?.is_saved }"
+                    @click="handleSave"
+                    style="cursor: pointer;"
+                    title="Salvar"
+                >
+                    <i class="bi" :class="post?.is_saved ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
                 </div>
 
                 <div class="action-btn d-flex align-items-center justify-content-center" style="cursor: pointer;">
@@ -281,6 +287,14 @@ const handleLike = () => {
         return
     }
     postDetailStore.toggleLike()
+}
+
+const handleSave = () => {
+    if (!authStore.isAuthenticated) {
+        alert('Você precisa estar logado para salvar um post')
+        return
+    }
+    postDetailStore.toggleSave()
 }
 
 const handleFollow = () => {

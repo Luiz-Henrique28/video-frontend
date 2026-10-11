@@ -1,6 +1,7 @@
-﻿import { defineStore } from "pinia"
+import { defineStore } from "pinia"
 import { getPostById, addComment } from "../services/post.api"
 import { likePost, unlikePost } from "../services/like.api"
+import { savePost, unsavePost } from "../services/save.api"
 import type { PostDetailModel } from "../services/post.api"
 
 type Status = 'initial' | 'loading' | 'success' | 'error'
@@ -10,7 +11,8 @@ export const usePostDetailStore = defineStore('postDetail', {
         post: null as PostDetailModel | null,
         status: 'initial' as Status,
         error: null as string | null,
-        isTogglingLike: false
+        isTogglingLike: false,
+        isTogglingSave: false
     }),
 
     actions: {
@@ -83,6 +85,28 @@ export const usePostDetailStore = defineStore('postDetail', {
                 console.error('Erro ao curtir/descurtir:', error)
             } finally {
                 this.isTogglingLike = false
+            }
+        },
+
+        async toggleSave() {
+            if (!this.post || this.isTogglingSave) return
+
+            this.isTogglingSave = true
+
+            const previousSaved = !!this.post.is_saved
+            this.post.is_saved = !previousSaved
+
+            try {
+                const response = previousSaved
+                    ? await unsavePost(this.post.id)
+                    : await savePost(this.post.id)
+
+                this.post.is_saved = response.saved
+            } catch (error) {
+                this.post.is_saved = previousSaved
+                console.error('Erro ao salvar/remover post dos salvos:', error)
+            } finally {
+                this.isTogglingSave = false
             }
         }
     },

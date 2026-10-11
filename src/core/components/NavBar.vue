@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../modules/auth/store/auth.store';
@@ -107,6 +107,9 @@ const goToResult = (item: SearchResult) => {
                         <router-link to="/post/create" class="nav-link" title="Upload">
                             <i class="bi bi-upload fs-5"></i>
                         </router-link>
+                        <router-link to="/saved" class="nav-link" title="Saved">
+                            <i class="bi bi-bookmark-fill fs-5"></i>
+                        </router-link>
                         <router-link to="/settings" class="nav-link" title="Settings">
                             <i class="bi bi-gear-fill fs-5"></i>
                         </router-link>
@@ -207,7 +210,7 @@ const goToResult = (item: SearchResult) => {
                     <i class="bi bi-heart-fill me-2"></i>LIKED
                 </router-link>
 
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
+                <router-link to="/saved" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-bookmark-fill me-2"></i>SAVED
                 </router-link>
 

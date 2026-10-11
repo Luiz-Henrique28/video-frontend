@@ -1,4 +1,4 @@
-﻿import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../../modules/auth/store/auth.store'
 
 const routes = [
@@ -29,6 +29,12 @@ const routes = [
         path: '/post/:id',
         name: 'postDetail',
         component: () => import('../../modules/post/views/PostDetailPage.vue')
+    },
+    {
+        path: '/saved',
+        name: 'savedPosts',
+        component: () => import('../../modules/post/views/SavedPostsPage.vue'),
+        meta: { requiresAuth: true }
     },
     // Perfil proprio (auth obrigatoria - redireciona pelo username do store)
     {
