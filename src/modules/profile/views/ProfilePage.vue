@@ -115,8 +115,8 @@ watch(username, (newName) => {
                     <i class="bi bi-plus-lg me-1"></i> SEGUIR
                 </router-link>
 
-                <!-- Botão de ocultar (olho) -->
-                <button class="btn btn-sm btn-pink square-btn flex-shrink-0" title="Ocultar">
+                <!-- Botão de ocultar (olho) - apenas no perfil de outros usuários -->
+                <button v-if="!isOwnProfile" class="btn btn-sm btn-pink square-btn flex-shrink-0" title="Ocultar">
                     <i class="bi bi-eye-slash-fill"></i>
                 </button>
 
@@ -254,7 +254,7 @@ watch(username, (newName) => {
 
 <style scoped>
 .profile-page {
-    background-color: var(--bg-dark, #1a1a1a);
+    background-color: var(--bg-secondary, #232323);
     min-height: 100vh;
     color: var(--text-white, #fff);
 }

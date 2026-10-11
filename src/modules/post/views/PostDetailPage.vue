@@ -136,9 +136,16 @@
                 <span class="fs-4">Comment</span>
             </div>
 
-            <template v-for="comment in post?.comment" :key="comment.id">
-                <div class="mb-2 text-start fs-6">
-                    <span class="text-pink me-2 small">{{ comment.user?.name }}</span>
+            <template v-for="comment in post?.comment" :key="comment?.id">
+                <div v-if="comment" class="mb-2 text-start fs-6">
+                    <router-link
+                        v-if="comment.user?.name"
+                        :to="`/profile/${comment.user.name}`"
+                        class="text-pink me-2 small text-decoration-none fw-semibold comment-user-link"
+                    >
+                        {{ comment.user.name }}
+                    </router-link>
+                    <span v-else class="text-pink me-2 small">Unknown</span>
                     <span class="text-secondary small" style="word-break: break-word;">{{ comment.content }}</span>
                 </div>
             </template>
@@ -414,6 +421,11 @@ input:disabled {
 
 .text-danger {
   color: #ff4d6d !important;
+}
+
+.comment-user-link:hover {
+  text-decoration: underline !important;
+  filter: brightness(1.2);
 }
 
 .comment-input-wrapper input {

@@ -99,6 +99,37 @@ const goToResult = (item: SearchResult) => {
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
+                    <!-- Desktop items -->
+                    <div v-if="authStore.isAuthenticated" class="d-none d-md-flex align-items-center gap-3">
+                        <button class="btn btn-link nav-link p-0" @click="toggleSearchField" title="Search">
+                            <i class="bi bi-search fs-5"></i>
+                        </button>
+                        <router-link to="/post/create" class="nav-link" title="Upload">
+                            <i class="bi bi-upload fs-5"></i>
+                        </router-link>
+                        <router-link to="/settings" class="nav-link" title="Settings">
+                            <i class="bi bi-gear-fill fs-5"></i>
+                        </router-link>
+                        <router-link to="/profile" class="nav-link d-flex align-items-center gap-2" title="Profile">
+                            <img
+                                v-if="authStore.user?.avatar"
+                                :src="authStore.user.avatar"
+                                class="rounded-circle border border-secondary"
+                                style="width: 28px; height: 28px; object-fit: cover;"
+                                :alt="authStore.user?.name || 'User'"
+                            />
+                            <i v-else class="bi bi-person-circle fs-5"></i>
+                        </router-link>
+                    </div>
+
+                    <div v-else class="d-none d-md-flex align-items-center gap-3">
+                        <button class="btn btn-link nav-link p-0" @click="toggleSearchField" title="Search">
+                            <i class="bi bi-search fs-5"></i>
+                        </button>
+                        <router-link to="/" class="nav-link">
+                            SIGN IN
+                        </router-link>
+                    </div>
 
                     <button class="btn btn-primary d-md-none menu-btn" @click="toggleMenu">
                         <i class="bi" :class="menuOpen ? 'bi-x-lg' : 'bi-list'"></i>
@@ -192,11 +223,11 @@ const goToResult = (item: SearchResult) => {
                     <i class="bi bi-upload me-2"></i>UPLOAD
                 </router-link>
 
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
+                <router-link to="/settings" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-gear-fill me-2"></i>SETTINGS
                 </router-link>
 
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
+                <router-link to="/profile" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-person-fill me-2"></i>PROFILE
                 </router-link>
             </div>
