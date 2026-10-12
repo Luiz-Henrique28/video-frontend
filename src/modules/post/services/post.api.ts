@@ -1,4 +1,4 @@
-﻿import { http } from "../../../core/services/http";
+import { http } from "../../../core/services/http";
 import type {
   PostDetailModel,
   MediaModel,
@@ -53,10 +53,22 @@ async function getPostById(id: number | string): Promise<PostDetailModel> {
   return (postResult.data as any).data ?? postResult.data
 }
 
+async function repostPost(postId: number | string): Promise<{ reposted: boolean; reposts_count: number }> {
+  const response = await http.post(`/post/${postId}/repost`)
+  return response.data
+}
+
+async function unrepostPost(postId: number | string): Promise<{ reposted: boolean; reposts_count: number }> {
+  const response = await http.delete(`/post/${postId}/repost`)
+  return response.data
+}
+
 export {
   createPost,
   getPostById,
-  addComment
+  addComment,
+  repostPost,
+  unrepostPost
 }
 
 export type {

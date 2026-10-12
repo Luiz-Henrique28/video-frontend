@@ -15,6 +15,7 @@ export type UserProfileModel = {
   is_following: boolean | null;
   is_blocked?: boolean;
   hidden_count?: number;
+  reposts_count?: number;
 };
 
 export type FollowResponse = {
@@ -48,9 +49,9 @@ export async function getUserProfile(username: string): Promise<UserProfileModel
 /**
  * Busca os posts de um usuário pelo ID (paginado).
  */
-export async function getUserPosts(userId: number, page = 1) {
+export async function getUserPosts(userId: number, page = 1, type: 'all' | 'posts' | 'reposts' = 'all') {
   
-  const response = await http.get(`/user/${userId}/posts`, { params: { page } });
+  const response = await http.get(`/user/${userId}/posts`, { params: { page, type } });
   const rawData = response.data;
   if (rawData && !rawData.next_page_url && (rawData as any).links?.next) {
       rawData.next_page_url = (rawData as any).links.next;

@@ -21,6 +21,7 @@ export const useProfileStore = defineStore('profile', {
         error: null as string | null,
         isTogglingFollow: false,
         isTogglingBlock: false,
+        currentTab: 'all' as 'all' | 'posts' | 'reposts',
     }),
 
     actions: {
@@ -35,6 +36,7 @@ export const useProfileStore = defineStore('profile', {
                 this.profile = null
                 this.posts = []
                 this.nextPage = null
+                this.currentTab = 'all'
 
                 this.profile = await getUserProfile(username)
                 this.status = 'success'
@@ -48,12 +50,14 @@ export const useProfileStore = defineStore('profile', {
         /**
          * Busca os posts do usuário cujo perfil está carregado.
          */
-        async fetchPosts() {
+        async fetchPosts(type: 'all' | 'posts' | 'reposts' = 'all') {
             if (!this.profile) return
 
+            this.currentTab = type
             try {
                 this.postsStatus = 'loading'
-                const result = await getUserPosts(this.profile.id)
+                this.posts = []
+                const result = await getUserPosts(this.profile.id, 1, type)
                 this.posts = result.data
                 this.nextPage = result.next_page_url
                 this.postsStatus = 'success'

@@ -34,12 +34,20 @@
       </router-link>
     </div>
 
-    <!-- Informações do usuário (ocultável via prop hideUser) -->
+    <!-- Informações do usuário (ou indicador de repost) -->
     <div class="mt-2">
       <router-link :to="'/post/' + id" class="d-block fw-semibold w-100 post-caption post-caption-lines" :title="caption">
         {{ caption }}
       </router-link>
-      <div v-if="!hideUser" class="d-flex align-items-center mt-1">
+      <div v-if="isRepost" class="d-flex align-items-center mt-1">
+        <i class="bi bi-arrow-repeat text-secondary me-1 fs-6 flex-shrink-0" title="Republicação"></i>
+        <router-link
+          v-if="user?.name"
+          :to="'/profile/' + user.name"
+          class="text-start text-truncate post-username post-username-size text-decoration-none"
+        >{{ user?.name }}</router-link>
+      </div>
+      <div v-else-if="!hideUser" class="d-flex align-items-center mt-1">
         <UserAvatar :name="user?.name" :avatarUrl="user?.avatar" :to="user?.name ? `/profile/${user.name}` : null" :size="24" class="me-1" />
         <router-link
           v-if="user?.name"
@@ -65,6 +73,7 @@ defineProps({
   videoCount: { type: Number, default: 0 },
   viewsCount: { type: Number, default: 0 },
   hideUser: { type: Boolean, default: false },
+  isRepost: { type: Boolean, default: false },
 });
 </script>
 

@@ -35,6 +35,8 @@ export interface PostDetailModel {
   views_count: number;
   is_liked: boolean;
   is_saved: boolean;
+  is_reposted?: boolean;
+  reposts_count?: number;
   created_at: string;
   thumbnail_path: string | null;
   user: UserModel;
@@ -53,4 +55,5 @@ export interface CardPostModel {
   image_count?: any;
   video_count?: any;
   views_count?: number;
+  is_repost?: boolean;
 }

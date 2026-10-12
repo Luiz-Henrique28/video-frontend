@@ -78,9 +78,16 @@
                     <span v-if="post && post.likes_count > 0" class="small fw-bold">{{ formatCompactNumber(post.likes_count) }}</span>
                 </div>
 
-                <div class="action-btn d-flex align-items-center gap-1" style="cursor: pointer;">
+                <div 
+                    v-if="post?.user?.id !== authStore.user?.id"
+                    class="action-btn d-flex align-items-center gap-1" 
+                    :class="{ 'is-active': post?.is_reposted }"
+                    @click="handleRepost" 
+                    style="cursor: pointer;"
+                    :title="post?.is_reposted ? 'Desfazer republicação' : 'Republicar'"
+                >
                     <i class="bi bi-arrow-repeat"></i>
-                    <span class="small fw-bold">5</span>
+                    <span v-if="post && (post.reposts_count ?? 0) > 0" class="small fw-bold">{{ formatCompactNumber(post.reposts_count) }}</span>
                 </div>
 
                 <div 
@@ -302,6 +309,14 @@ const handleSave = () => {
         return
     }
     postDetailStore.toggleSave()
+}
+
+const handleRepost = () => {
+    if (!authStore.isAuthenticated) {
+        alert('Você precisa estar logado para republicar um post')
+        return
+    }
+    postDetailStore.toggleRepost()
 }
 
 const handleFollow = () => {

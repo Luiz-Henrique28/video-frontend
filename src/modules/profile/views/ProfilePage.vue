@@ -48,7 +48,7 @@ const handleBlock = () => {
 const loadProfile = async (name: string) => {
     if (!name) return;
     await profileStore.fetchProfile(name);
-    await profileStore.fetchPosts();
+    await profileStore.fetchPosts(activeTab.value);
 };
 
 onMounted(() => loadProfile(username.value));
@@ -56,6 +56,11 @@ onMounted(() => loadProfile(username.value));
 // Suporta navegação entre perfis sem recarregar o componente
 watch(username, (newName) => {
     if (newName) loadProfile(newName);
+});
+
+// Ao trocar de aba, busca os posts daquela aba
+watch(activeTab, (newTab) => {
+    profileStore.fetchPosts(newTab);
 });
 </script>
 
@@ -244,7 +249,7 @@ watch(username, (newName) => {
                     style="cursor: pointer;"
                     class="fw-bold"
                 >
-                    0 REPOSTS
+                    {{ formatCompactNumber(profile.reposts_count) }} REPOSTS
                 </div>
             </div>
 
@@ -267,7 +272,8 @@ watch(username, (newName) => {
                             :videoCount="post.video_count"
                             :viewsCount="post.views_count"
                             :user="post.user || profile"
-                            :hideUser="true"
+                            :hideUser="!post.is_repost"
+                            :isRepost="Boolean(post.is_repost)"
                         />
                     </div>
                 </template>

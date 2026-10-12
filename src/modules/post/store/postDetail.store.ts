@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getPostById, addComment } from "../services/post.api"
+import { getPostById, addComment, repostPost, unrepostPost } from "../services/post.api"
 import { likePost, unlikePost } from "../services/like.api"
 import { savePost, unsavePost } from "../services/save.api"
 import type { PostDetailModel } from "../services/post.api"
@@ -12,7 +12,8 @@ export const usePostDetailStore = defineStore('postDetail', {
         status: 'initial' as Status,
         error: null as string | null,
         isTogglingLike: false,
-        isTogglingSave: false
+        isTogglingSave: false,
+        isTogglingRepost: false
     }),
 
     actions: {
@@ -107,6 +108,34 @@ export const usePostDetailStore = defineStore('postDetail', {
                 console.error('Erro ao salvar/remover post dos salvos:', error)
             } finally {
                 this.isTogglingSave = false
+            }
+        },
+
+        async toggleRepost() {
+            if (!this.post || this.isTogglingRepost) return
+
+            this.isTogglingRepost = true
+
+            const previousReposted = !!this.post.is_reposted
+            const previousCount = this.post.reposts_count ?? 0
+
+            // Optimistic UI
+            this.post.is_reposted = !previousReposted
+            this.post.reposts_count = Math.max(0, previousCount + (previousReposted ? -1 : 1))
+
+            try {
+                const response = previousReposted
+                    ? await unrepostPost(this.post.id)
+                    : await repostPost(this.post.id)
+
+                this.post.is_reposted = response.reposted
+                this.post.reposts_count = response.reposts_count
+            } catch (error) {
+                this.post.is_reposted = previousReposted
+                this.post.reposts_count = previousCount
+                console.error('Erro ao republicar/desfazer republicação:', error)
+            } finally {
+                this.isTogglingRepost = false
             }
         }
     },
