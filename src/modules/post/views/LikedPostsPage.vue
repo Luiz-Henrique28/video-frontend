@@ -4,7 +4,7 @@
     <div id="swipes" class="main-content">
         <div class="p-2 d-flex align-items-center gap-2">
             <i class="bi bi-heart-fill fs-3 text-secondary"></i>
-            <span class="fs-3 fw-bold">Liked</span>
+            <span class="fs-3 fw-bold text-secondary">Liked</span>
         </div>
 
         <div id="tabs" class="p-2 d-flex gap-4 fs-5">
