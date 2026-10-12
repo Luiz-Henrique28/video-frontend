@@ -1,4 +1,5 @@
 import { http } from "../../../core/services/http";
+import type { HiddenUserModel } from "../../../core/types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,11 +13,25 @@ export type UserProfileModel = {
   total_views?: number;
   /** null = usuário não autenticado (perfil público) */
   is_following: boolean | null;
+  is_blocked?: boolean;
+  hidden_count?: number;
 };
 
 export type FollowResponse = {
   following: boolean;
   followers_count: number;
+};
+
+export type BlockResponse = {
+  blocked: boolean;
+  hidden_count: number;
+};
+
+export type PaginatedHiddenUsersModel = {
+  data: HiddenUserModel[];
+  current_page: number;
+  next_page_url: string | null;
+  total: number;
 };
 
 // ─── API Functions ────────────────────────────────────────────────────────────
@@ -132,3 +147,20 @@ export async function updateAvatarApi(file: File) {
   const response = await http.post('/user/avatar', formData);
   return response.data;
 }
+
+export async function blockUser(userId: number): Promise<BlockResponse> {
+  const response = await http.post(`/user/${userId}/block`);
+  return response.data;
+}
+
+export async function unblockUser(userId: number): Promise<BlockResponse> {
+  const response = await http.delete(`/user/${userId}/block`);
+  return response.data;
+}
+
+export async function getHiddenUsers(url?: string): Promise<PaginatedHiddenUsersModel> {
+  const endpoint = url || '/user/hiddens';
+  const response = await http.get(endpoint);
+  return response.data;
+}
+

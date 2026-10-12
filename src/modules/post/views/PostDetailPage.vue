@@ -38,7 +38,14 @@
                     </template>
                 </button>
 
-                <button v-if="post?.user?.id !== authStore.user?.id" class="btn btn-sm btn-pink square-btn flex-shrink-0">
+                <button
+                    v-if="post?.user?.id !== authStore.user?.id && authStore.isAuthenticated"
+                    class="btn btn-sm square-btn flex-shrink-0"
+                    :class="profileStore.profile?.is_blocked ? 'btn-following-sm' : 'btn-pink'"
+                    :disabled="profileStore.isTogglingBlock"
+                    @click="handleBlock"
+                    :title="profileStore.profile?.is_blocked ? 'Desbloquear' : 'Ocultar'"
+                >
                     <i class="bi bi-eye-slash-fill"></i>
                 </button>
             </div>
@@ -303,6 +310,14 @@ const handleFollow = () => {
         return
     }
     profileStore.toggleFollow()
+}
+
+const handleBlock = () => {
+    if (!authStore.isAuthenticated) {
+        alert('Você precisa estar logado para ocultar um usuário')
+        return
+    }
+    profileStore.toggleBlock(post.value?.user ? { id: post.value.user.id } : undefined)
 }
 
 // Ao carregar o post, carrega o perfil do criador para sincronizar is_following

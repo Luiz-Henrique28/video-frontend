@@ -42,6 +42,12 @@ const routes = [
         component: () => import('../../modules/post/views/LikedPostsPage.vue'),
         meta: { requiresAuth: true }
     },
+    {
+        path: '/hiddens',
+        name: 'hiddenUsers',
+        component: () => import('../../modules/profile/views/HiddenUsersPage.vue'),
+        meta: { requiresAuth: true }
+    },
     // Perfil proprio (auth obrigatoria - redireciona pelo username do store)
     {
         path: '/profile',

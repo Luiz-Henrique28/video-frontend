@@ -36,6 +36,14 @@ const handleFollow = () => {
     profileStore.toggleFollow();
 };
 
+const handleBlock = () => {
+    if (!authStore.isAuthenticated) {
+        router.push('/');
+        return;
+    }
+    profileStore.toggleBlock();
+};
+
 // Ao montar ou mudar de username, busca o perfil e os posts
 const loadProfile = async (name: string) => {
     if (!name) return;
@@ -116,7 +124,14 @@ watch(username, (newName) => {
                 </router-link>
 
                 <!-- Botão de ocultar (olho) - apenas no perfil de outros usuários -->
-                <button v-if="!isOwnProfile" class="btn btn-sm btn-pink square-btn flex-shrink-0" title="Ocultar">
+                <button
+                    v-if="!isOwnProfile && authStore.isAuthenticated"
+                    class="btn btn-sm square-btn flex-shrink-0"
+                    :class="profile.is_blocked ? 'btn-following-sm' : 'btn-pink'"
+                    :disabled="profileStore.isTogglingBlock"
+                    @click="handleBlock"
+                    :title="profile.is_blocked ? 'Desbloquear' : 'Ocultar'"
+                >
                     <i class="bi bi-eye-slash-fill"></i>
                 </button>
 
@@ -185,6 +200,17 @@ watch(username, (newName) => {
                 <div class="d-flex align-items-center gap-1" title="Seguindo">
                     <i class="bi bi-person-check-fill"></i>
                     <span class="fw-bold">{{ formatCompactNumber(profile.following_count) }}</span>
+                </div>
+
+                <div
+                    v-if="isOwnProfile"
+                    class="d-flex align-items-center gap-1 cursor-pointer"
+                    title="Ocultos"
+                    @click="router.push('/hiddens')"
+                    style="cursor: pointer;"
+                >
+                    <i class="bi bi-eye-slash-fill"></i>
+                    <span class="fw-bold">{{ formatCompactNumber(profile.hidden_count) }}</span>
                 </div>
 
             </div>

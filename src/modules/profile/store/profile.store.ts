@@ -4,6 +4,8 @@ import {
     getUserPosts,
     followUser,
     unfollowUser,
+    blockUser,
+    unblockUser,
     type UserProfileModel,
 } from '../services/profile.api'
 
@@ -18,6 +20,7 @@ export const useProfileStore = defineStore('profile', {
         postsStatus: 'initial' as Status,
         error: null as string | null,
         isTogglingFollow: false,
+        isTogglingBlock: false,
     }),
 
     actions: {
@@ -92,6 +95,36 @@ export const useProfileStore = defineStore('profile', {
                 console.error('Erro ao seguir/deixar de seguir:', error)
             } finally {
                 this.isTogglingFollow = false
+            }
+        },
+
+        async toggleBlock(targetUser?: { id: number }) {
+            const user = targetUser || this.profile
+            if (!user || this.isTogglingBlock) return
+
+            this.isTogglingBlock = true
+            const previousBlocked = this.profile && this.profile.id === user.id ? !!this.profile.is_blocked : false
+            if (this.profile && this.profile.id === user.id) {
+                this.profile.is_blocked = !previousBlocked
+            }
+
+            try {
+                const response = previousBlocked
+                    ? await unblockUser(user.id)
+                    : await blockUser(user.id)
+
+                if (this.profile && this.profile.id === user.id) {
+                    this.profile.is_blocked = response.blocked
+                }
+                return response
+            } catch (error) {
+                if (this.profile && this.profile.id === user.id) {
+                    this.profile.is_blocked = previousBlocked
+                }
+                console.error('Erro ao alternar bloqueio de usuário:', error)
+                throw error
+            } finally {
+                this.isTogglingBlock = false
             }
         },
     },

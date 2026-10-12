@@ -1,4 +1,4 @@
-﻿export interface UserModel {
+export interface UserModel {
   id: number;
   name: string;
   email?: string;
@@ -15,4 +15,13 @@ export interface UserProfileModel {
   total_views?: number;
   /** null = usuario nao autenticado (perfil publico) */
   is_following: boolean | null;
+  is_blocked?: boolean;
+  hidden_count?: number;
 }
+
+export interface HiddenUserModel {
+  id: number;
+  name: string;
+  avatar: string | null;
+}
+
