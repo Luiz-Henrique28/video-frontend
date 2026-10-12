@@ -36,6 +36,12 @@ const routes = [
         component: () => import('../../modules/post/views/SavedPostsPage.vue'),
         meta: { requiresAuth: true }
     },
+    {
+        path: '/liked',
+        name: 'likedPosts',
+        component: () => import('../../modules/post/views/LikedPostsPage.vue'),
+        meta: { requiresAuth: true }
+    },
     // Perfil proprio (auth obrigatoria - redireciona pelo username do store)
     {
         path: '/profile',

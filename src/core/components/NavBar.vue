@@ -110,6 +110,9 @@ const goToResult = (item: SearchResult) => {
                         <router-link to="/saved" class="nav-link" title="Saved">
                             <i class="bi bi-bookmark-fill fs-5"></i>
                         </router-link>
+                        <router-link to="/liked" class="nav-link" title="Liked">
+                            <i class="bi bi-heart-fill fs-5"></i>
+                        </router-link>
                         <router-link to="/settings" class="nav-link" title="Settings">
                             <i class="bi bi-gear-fill fs-5"></i>
                         </router-link>
@@ -206,7 +209,7 @@ const goToResult = (item: SearchResult) => {
                     <i class="bi bi-rss me-2"></i>FEED
                 </router-link>
 
-                <router-link to="#" class="nav-link" @click="menuOpen = false">
+                <router-link to="/liked" class="nav-link" @click="menuOpen = false">
                     <i class="bi bi-heart-fill me-2"></i>LIKED
                 </router-link>
 
