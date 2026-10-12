@@ -147,6 +147,41 @@ select {
   cursor: not-allowed;
 }
 
+.btn-pink {
+  background-color: var(--primary-color) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  color: #fff !important;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.85rem;
+  transition: var(--transition-normal);
+}
+
+.btn-pink:hover:not(:disabled) {
+  background-color: var(--primary-hover) !important;
+  color: #fff !important;
+}
+
+.btn-pink:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.btn-following-sm {
+  background-color: transparent !important;
+  border: 1.5px solid var(--text-muted) !important;
+  color: var(--text-muted) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  transition: var(--transition-normal);
+}
+
+.btn-following-sm:hover:not(:disabled) {
+  border-color: #ff4d6d !important;
+  color: #ff4d6d !important;
+}
+
 /* Bordas */
 .border-primary-custom {
   border-color: var(--primary-color) !important;

@@ -18,11 +18,11 @@
                 <h4 class="text-secondary">Empty</h4>
             </div>
 
-            <div v-else class="hidden-users-list px-2 py-1">
+            <div v-else class="hidden-users-list px-3 py-1">
                 <div
                     v-for="user in users"
                     :key="user.id"
-                    class="d-flex align-items-center justify-content-between py-2 border-bottom border-secondary border-opacity-25"
+                    class="d-flex align-items-center justify-content-between py-2 border-bottom border-secondary border-opacity-25 w-100"
                 >
                     <div class="d-flex align-items-center gap-2">
                         <UserAvatar
@@ -40,12 +40,12 @@
                     </div>
 
                     <button
-                        class="btn btn-sm btn-pink fw-bold px-3"
+                        class="btn btn-sm btn-pink fw-bold px-3 ms-auto"
                         :disabled="unblockingId === user.id"
                         @click="handleUnblock(user.id)"
                     >
-                        <span v-if="unblockingId === user.id" class="spinner-border spinner-border-sm"></span>
-                        <span v-else>Hidden</span>
+                        <span v-if="unblockingId === user.id" class="spinner-border spinner-border-sm me-1"></span>
+                        <span>Desbloquear</span>
                     </button>
                 </div>
             </div>
@@ -85,5 +85,25 @@ const handleUnblock = (userId: number) => {
 .tab-active {
     color: var(--primary-color, #ff69b4);
     font-weight: 600;
+}
+
+.btn-pink {
+    background-color: var(--primary-color, #a855f7);
+    border: none;
+    border-radius: var(--radius-sm, 4px);
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.85rem;
+    transition: var(--transition-normal, all 0.2s ease);
+}
+
+.btn-pink:hover:not(:disabled) {
+    background-color: var(--primary-hover, #9333ea);
+    color: #fff;
+}
+
+.btn-pink:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 </style>

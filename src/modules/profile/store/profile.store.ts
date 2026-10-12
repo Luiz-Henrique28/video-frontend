@@ -116,6 +116,9 @@ export const useProfileStore = defineStore('profile', {
                 if (this.profile && this.profile.id === user.id) {
                     this.profile.is_blocked = response.blocked
                 }
+                if (this.profile && this.profile.hidden_count !== undefined && this.profile.id !== user.id) {
+                    this.profile.hidden_count = response.hidden_count
+                }
                 return response
             } catch (error) {
                 if (this.profile && this.profile.id === user.id) {

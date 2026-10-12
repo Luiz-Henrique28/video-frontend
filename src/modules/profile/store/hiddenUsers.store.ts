@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { getHiddenUsers, unblockUser } from '../services/profile.api';
+import { useProfileStore } from './profile.store';
 import type { HiddenUserModel } from '../../../core/types';
 
 type Status = 'initial' | 'ready' | 'loading' | 'canceled' | 'success' | 'error';
@@ -41,8 +42,12 @@ export const useHiddenUsersStore = defineStore('hiddenUsers', {
         async removeHiddenUser(userId: number) {
             try {
                 this.unblockingId = userId;
-                await unblockUser(userId);
+                const response = await unblockUser(userId);
                 this.users = this.users.filter((u) => u.id !== userId);
+                const profileStore = useProfileStore();
+                if (profileStore.profile && profileStore.profile.hidden_count !== undefined) {
+                    profileStore.profile.hidden_count = response.hidden_count;
+                }
             } catch (error) {
                 console.error('Erro ao desbloquear usuário:', error);
             } finally {
