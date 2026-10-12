@@ -3,7 +3,7 @@
 
     <div id="swipes" class="main-content">
         <div class="p-2 d-flex align-items-center gap-2">
-            <i class="bi bi-heart-fill fs-3 text-danger"></i>
+            <i class="bi bi-heart-fill fs-3 text-secondary"></i>
             <span class="fs-3 fw-bold">Liked</span>
         </div>
 
@@ -15,9 +15,7 @@
 
         <div v-if="status === 'success'">
             <div v-if="posts.length === 0" class="empty-state text-center py-5 my-4">
-                <i class="bi bi-heartbreak text-secondary" style="font-size: 3rem;"></i>
-                <h4 class="mt-3 text-secondary">Empty</h4>
-                <p class="text-muted small">You haven't liked any posts yet.</p>
+                <h4 class="text-secondary">Empty</h4>
             </div>
 
             <div v-else class="row g-3 post-list">
