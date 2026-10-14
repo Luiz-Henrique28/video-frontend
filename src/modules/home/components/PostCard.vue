@@ -2,10 +2,28 @@
   <div :id="id">
     <!-- Thumbnail quadrada -->
     <div class="post-thumbnail-container position-relative w-100">
-        <router-link :to="'/post/' + id" class="d-block">
+      <router-link :to="'/post/' + id" class="d-block">
+        <div class="thumbnail-wrapper position-relative bg-dark bg-opacity-10 rounded">
+          <!-- Thumbnail quando pronta e carregada com sucesso -->
+          <img
+            v-if="thumbnail_path && !imageError"
+            :src="thumbnail_path"
+            :alt="caption"
+            class="w-100 h-100 object-cover rounded"
+            loading="lazy"
+            @error="imageError = true"
+          />
 
-        <div class="thumbnail-wrapper position-relative">
-          <img :src="thumbnail_path" :alt="caption" class="w-100 h-100 object-cover rounded" loading="lazy" />
+          <!-- Placeholder visual quando a thumbnail ainda não existe ou se falhar o carregamento -->
+          <div
+            v-else
+            class="thumbnail-placeholder position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center rounded bg-secondary bg-opacity-25 text-secondary"
+          >
+            <i :class="videoCount > 0 ? 'bi bi-camera-video-fill' : 'bi bi-image-fill'" class="fs-2 opacity-50"></i>
+            <span v-if="videoCount > 0 && !thumbnail_path" class="placeholder-text small mt-1 opacity-75 fw-medium text-center px-2">
+              Gerando prévia...
+            </span>
+          </div>
 
           <div class="post-views position-absolute bottom-0 start-0 p-2 d-flex align-items-center">
             <div class="d-flex align-items-center bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small">
@@ -15,21 +33,22 @@
           </div>
 
           <div class="post-counts position-absolute bottom-0 end-0 p-2 d-flex align-items-center">
-
-            <div v-if="imageCount > 0"
-              class="d-flex align-items-center me-2 bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small">
+            <div
+              v-if="imageCount > 0"
+              class="d-flex align-items-center me-2 bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small"
+            >
               <i class="bi bi-camera-fill me-1"></i>
               <span>{{ imageCount }}</span>
             </div>
 
-            <div v-if="videoCount > 0"
-              class="d-flex align-items-center bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small">
+            <div
+              v-if="videoCount > 0"
+              class="d-flex align-items-center bg-dark bg-opacity-75 text-white px-2 py-1 rounded-pill small"
+            >
               <i class="bi bi-camera-video-fill me-1"></i>
               <span>{{ videoCount }}</span>
             </div>
-
           </div>
-
         </div>
       </router-link>
     </div>
@@ -60,10 +79,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import UserAvatar from '../../../core/components/UserAvatar.vue';
 import { formatCompactNumber } from '../../../core/utils/formatters';
 
-defineProps({
+const props = defineProps({
   id: { type: String, required: true },
   userId: { type: Number, required: true },
   caption: { type: String, default: '' },
@@ -75,6 +95,17 @@ defineProps({
   hideUser: { type: Boolean, default: false },
   isRepost: { type: Boolean, default: false },
 });
+
+const imageError = ref(false);
+
+watch(
+  () => props.thumbnail_path,
+  (newVal) => {
+    if (newVal) {
+      imageError.value = false;
+    }
+  }
+);
 </script>
 
 <style scoped>
@@ -95,6 +126,15 @@ defineProps({
   height: 100%;
 }
 
+.thumbnail-placeholder {
+  user-select: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.placeholder-text {
+  font-size: 0.72rem;
+  letter-spacing: -0.2px;
+}
 
 .user-avatar {
   width: 36px;
