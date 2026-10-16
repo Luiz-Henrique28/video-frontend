@@ -18,7 +18,7 @@ export const useSavedPostStore = defineStore('savedPost', {
                 const result = await getSavedPosts();
 
                 this.posts = result.data;
-                this.nextPage = result.next_page_url;
+                this.nextPage = result.links?.next ?? null;
 
                 this.status = 'success';
             } catch (error) {
@@ -33,7 +33,7 @@ export const useSavedPostStore = defineStore('savedPost', {
                 const result = await getSavedPosts(this.nextPage);
 
                 this.posts.push(...result.data);
-                this.nextPage = result.next_page_url;
+                this.nextPage = result.links?.next ?? null;
             } catch (error) {
                 this.status = 'error';
                 console.error('Erro ao buscar próxima página de salvos:', error);

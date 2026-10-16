@@ -1,5 +1,6 @@
 import { http } from "../../../core/services/http";
-import type { HiddenUserModel } from "../../../core/types";
+import type { CardPostModel, HiddenUserModel } from "../../../core/types";
+import type { PaginatedResultModel } from "../../../core/types/common.types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,12 +29,7 @@ export type BlockResponse = {
   hidden_count: number;
 };
 
-export type PaginatedHiddenUsersModel = {
-  data: HiddenUserModel[];
-  current_page: number;
-  next_page_url: string | null;
-  total: number;
-};
+export type PaginatedHiddenUsersModel = PaginatedResultModel<HiddenUserModel>;
 
 // ─── API Functions ────────────────────────────────────────────────────────────
 
@@ -49,14 +45,9 @@ export async function getUserProfile(username: string): Promise<UserProfileModel
 /**
  * Busca os posts de um usuário pelo ID (paginado).
  */
-export async function getUserPosts(userId: number, page = 1, type: 'all' | 'posts' | 'reposts' = 'all') {
-  
+export async function getUserPosts(userId: number, page = 1, type: 'all' | 'posts' | 'reposts' = 'all'): Promise<PaginatedResultModel<CardPostModel>> {
   const response = await http.get(`/user/${userId}/posts`, { params: { page, type } });
-  const rawData = response.data;
-  if (rawData && !rawData.next_page_url && (rawData as any).links?.next) {
-      rawData.next_page_url = (rawData as any).links.next;
-  }
-  return rawData;
+  return response.data;
 }
 
 /**
@@ -75,58 +66,6 @@ export async function unfollowUser(userId: number): Promise<FollowResponse> {
   return response.data;
 }
 
-
-/**
- * 1. Sistema de Tags e Likes
-
-Criar tabelas e migrations (tags, post_tag, likes).
-
-Desenvolver os endpoints para curtir/descurtir e vincular tags ao salvar posts.
-
-Implementar o input de tags (vue-multiselect) na criação do post.
-
-Criar a interface do botão de Like com Atualização Otimista (Optimistic UI) no Vue.
-
-2. Sistema de Follows e Evolução do Perfil
-
-Adicionar novos campos na tabela users (bio, avatar_path, banner_path).
-
-Criar a tabela pivô followers para a relação de seguir/seguido.
-
-Atualizar o endpoint do Perfil para retornar contadores integrados (withCount de seguidores, likes recebidos e posts).
-
-Desenvolver a UI do Perfil público (cabeçalho com banner/avatar, contadores, botão "Seguir" e grade de álbuns).
-
-Criar o endpoint e a interface do feed "Inscrições" (Posts de quem o usuário segue).
-
-3. Configurações da Conta (Settings)
-
-Desenvolver endpoints dedicados para upload, redimensionamento e salvamento de Avatar e Banner.
-
-Criar o painel de configurações no Vue dividido por abas (Editar Perfil, Segurança/Conta).
-
-Integrar as funções de alteração de senha e exclusão de conta já mapeadas na API.
-
-4. Infraestrutura e Processamento de Mídia
-
-Configurar credenciais do Cloudflare R2 (ou S3) no Laravel (config/filesystems.php e .env).
-
-Alterar o MediaController para enviar uploads de imagens e vídeos direto para o Object Storage.
-
-Refatorar o Job GenerateThumbFromVideo para baixar o vídeo do R2 para /tmp, rodar o FFmpeg localmente, subir a capa gerada para o R2 e limpar os rastros.
-
-Integrar um player de vídeo moderno (Video.js ou Plyr) no módulo de visualização do post.
-
-5. Monetização e Interface de Anúncios
-
-Criar um componente isolado no Vue (<AdBanner/>).
-
-Injetar o componente dinamicamente dentro do laço de repetição do Feed (ex: a cada 8 posts).
-
-Posicionar blocos fixos de anúncio abaixo do player de mídia e acima da seção de comentários.
- * 
- * 
- */
 export async function updateUsernameApi(name: string) {
   const response = await http.patch('/user/username', { name });
   return response.data;
@@ -164,4 +103,3 @@ export async function getHiddenUsers(url?: string): Promise<PaginatedHiddenUsers
   const response = await http.get(endpoint);
   return response.data;
 }
-

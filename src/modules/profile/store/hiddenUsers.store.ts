@@ -19,7 +19,7 @@ export const useHiddenUsersStore = defineStore('hiddenUsers', {
                 this.status = 'loading';
                 const result = await getHiddenUsers();
                 this.users = result.data;
-                this.nextPage = result.next_page_url;
+                this.nextPage = result.links?.next ?? null;
                 this.status = 'success';
             } catch (error) {
                 this.status = 'error';
@@ -32,7 +32,7 @@ export const useHiddenUsersStore = defineStore('hiddenUsers', {
                 if (!this.nextPage) return;
                 const result = await getHiddenUsers(this.nextPage);
                 this.users.push(...result.data);
-                this.nextPage = result.next_page_url;
+                this.nextPage = result.links?.next ?? null;
             } catch (error) {
                 this.status = 'error';
                 console.error('Erro ao buscar próxima página de usuários ocultos:', error);

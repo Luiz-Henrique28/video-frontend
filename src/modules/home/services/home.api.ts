@@ -1,56 +1,16 @@
 import { http } from "../../../core/services/http";
+import type { CardPostModel } from "../../../core/types";
+import type { PaginatedResultModel } from "../../../core/types/common.types";
 
-type CardPostModel = {
-    id: number,
-    // Deve ser 'user_id'
-    user_id: number,
-    caption: string,
-    // Deve ser 'first_media'
-    thumbnail_path: string,
-    first_media: any, 
-    user: {
-        id: any,
-        name: string,
-        avatar: string
-    },
-    // Deve ser 'image_count' e 'video_count'
-    image_count: any, 
-    video_count: any,
-    views_count?: number
-}
-
-type PaginetedResultModel = {
-    data: CardPostModel[],
-    current_page: number,
-    next_page_url: string | null, // Deve ser 'next_page_url'
-    total: number,
-    // ... adicione todos os outros campos snake_case que você usa
-    first_page_url: string,
-    from: number,
-    last_page: number,
-    last_page_url: string,
-    links: any[],
-    path: string,
-    per_page: number,
-    prev_page_url: string | null,
-    to: number
-}
-
-// ambos os metodos podem virar apenas um, assim como no home.store.ts, estudar essa situacao, a final quantos metods devo ter para que seja um codigo limpo
-async function getPosts(): Promise<PaginetedResultModel> {
+async function getPosts(): Promise<PaginatedResultModel<CardPostModel>> {
     const response = await http.get("/post");
-    const rawData = response.data;
-
-    return rawData;
+    return response.data;
 }
 
-async function getNextpage(nextUrl: string): Promise<PaginetedResultModel> {
-
+async function getNextpage(nextUrl: string): Promise<PaginatedResultModel<CardPostModel>> {
     const response = await http.get(nextUrl);
-    const rawData = response.data;
-
-    return rawData;
+    return response.data;
 }
 
-export { getPosts, getNextpage}
-export type {CardPostModel, PaginetedResultModel}
+export { getPosts, getNextpage };
+export type { CardPostModel, PaginatedResultModel };

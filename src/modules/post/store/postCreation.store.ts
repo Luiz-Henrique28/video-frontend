@@ -1,4 +1,4 @@
-﻿import { defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 import { createPost } from '../services/post.api';
 import axios, { CanceledError } from 'axios'
 import { validateMediaFile, MAX_FILES_PER_POST } from '../../../core/config/media';
@@ -100,19 +100,53 @@ export const usePostCreationStore = defineStore('postCreation', {
                     this.progress = pct;
                 });
 
+                // Extração segura do ID do post criado (compatível com ApiResponse e AxiosResponse)
+                const createdId = (response as any)?.data?.data?.id 
+                    ?? (response as any)?.data?.id 
+                    ?? true;
+
                 this.status = 'success';
-                const createdId = response.data?.id;
                 this.reset();
                 return createdId;
-            } catch (err) {
+            } catch (err: any) {
                 if (err instanceof CanceledError || axios.isCancel?.(err)) {
                     this.status = 'canceled';
-                } else {
-                    this.status = 'error';
-                    this.error = axios.isAxiosError(err)
-                        ? (err.response?.data as any)?.message ?? err.message
-                        : String(err);
+                    return null;
                 }
+
+                this.status = 'error';
+
+                // Trata erros de validação da API (ex: 422) de forma amigável e legível
+                if (axios.isAxiosError(err) && err.response) {
+                    const responseData = err.response.data as any;
+
+                    if (responseData?.errors && typeof responseData.errors === 'object') {
+                        const errorMessages = Object.values(responseData.errors)
+                            .flat()
+                            .filter(Boolean) as string[];
+
+                        if (errorMessages.length > 0) {
+                            const isMimeError = errorMessages.some(msg => 
+                                typeof msg === 'string' && (msg.includes('file of type') || msg.includes('mimes'))
+                            );
+                            if (isMimeError) {
+                                this.error = 'Um ou mais arquivos selecionados possuem formato não suportado pelo servidor.';
+                            } else {
+                                this.error = errorMessages[0];
+                            }
+                            return null;
+                        }
+                    }
+
+                    if (responseData?.message && typeof responseData.message === 'string') {
+                        this.error = responseData.message;
+                        return null;
+                    }
+                }
+
+                // Fallback amigável para o usuário caso seja erro de rede ou erro inesperado
+                this.error = 'Não foi possível salvar o post. Verifique sua conexão e tente novamente.';
+                console.error('Erro ao enviar post:', err);
                 return null;
             }
         },

@@ -79,15 +79,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, type PropType } from 'vue';
 import UserAvatar from '../../../core/components/UserAvatar.vue';
 import { formatCompactNumber } from '../../../core/utils/formatters';
 
 const props = defineProps({
   id: { type: String, required: true },
-  userId: { type: Number, required: true },
+  userId: { type: Number, default: 0 },
   caption: { type: String, default: '' },
-  thumbnail_path: { type: String, default: null },
+  thumbnail_path: { type: String as PropType<string | null>, default: null },
   user: { type: Object, required: true },
   imageCount: { type: Number, default: 0 },
   videoCount: { type: Number, default: 0 },

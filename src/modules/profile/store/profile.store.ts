@@ -59,7 +59,7 @@ export const useProfileStore = defineStore('profile', {
                 this.posts = []
                 const result = await getUserPosts(this.profile.id, 1, type)
                 this.posts = result.data
-                this.nextPage = result.next_page_url
+                this.nextPage = result.links?.next ?? null
                 this.postsStatus = 'success'
             } catch (error) {
                 this.postsStatus = 'error'

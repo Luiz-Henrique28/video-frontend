@@ -1,20 +1,13 @@
 import { http } from "../../../core/services/http";
 import type { CardPostModel } from "../../../core/types";
+import type { PaginatedResultModel } from "../../../core/types/common.types";
 
 type LikeResponse = {
   liked: boolean;
   likes_count: number;
 };
 
-type PaginatedLikedPostsModel = {
-  data: CardPostModel[];
-  current_page: number;
-  next_page_url: string | null;
-  prev_page_url: string | null;
-  total: number;
-  per_page: number;
-  last_page: number;
-};
+type PaginatedLikedPostsModel = PaginatedResultModel<CardPostModel>;
 
 async function likePost(postId: number | string): Promise<LikeResponse> {
   const response = await http.post(`/post/${postId}/like`);
@@ -34,4 +27,3 @@ async function getLikedPosts(url?: string): Promise<PaginatedLikedPostsModel> {
 
 export { likePost, unlikePost, getLikedPosts };
 export type { LikeResponse, PaginatedLikedPostsModel };
-

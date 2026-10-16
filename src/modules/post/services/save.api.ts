@@ -1,19 +1,12 @@
 import { http } from "../../../core/services/http";
 import type { CardPostModel } from "../../../core/types";
+import type { PaginatedResultModel } from "../../../core/types/common.types";
 
 type SaveResponse = {
   saved: boolean;
 };
 
-type PaginatedSavedPostsModel = {
-  data: CardPostModel[];
-  current_page: number;
-  next_page_url: string | null;
-  prev_page_url: string | null;
-  total: number;
-  per_page: number;
-  last_page: number;
-};
+type PaginatedSavedPostsModel = PaginatedResultModel<CardPostModel>;
 
 async function savePost(postId: number | string): Promise<SaveResponse> {
   const response = await http.post(`/post/${postId}/save`);

@@ -27,7 +27,7 @@ export interface TagModel {
 
 export interface PostDetailModel {
   id: number;
-  user_id?: number;
+  user_id: number;
   caption: string;
   image_count: number;
   video_count: number;
@@ -47,9 +47,9 @@ export interface PostDetailModel {
 
 export interface CardPostModel {
   id: number;
-  user_id?: number;
+  user_id: number;
   caption: string;
-  thumbnail_path: string;
+  thumbnail_path: string | null;
   first_media?: any;
   user: UserModel;
   image_count?: any;
